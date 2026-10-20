@@ -2,6 +2,36 @@
   --bg: #f7f7f7;
   --frame-w: 402px;
   --frame-h: 874px;
+  --nav-bg: #e5e5e5;
+  --nav-fg: #404040;
+  --nav-bg-hover: #dcdcdc;
+  /* Vidro dos botões da nav: mesma cor, translúcida, com o fundo desfocado. */
+  --nav-alpha: 65%;
+  --nav-glass: color-mix(in srgb, var(--nav-bg) var(--nav-alpha), transparent);
+  --nav-glass-hover: color-mix(in srgb, var(--nav-bg-hover) var(--nav-alpha), transparent);
+  --nav-blur: blur(14px) saturate(140%);
+  --text: #1f1f1f;
+  --text-muted: #8c8c8c;
+  --knob: #f9f9f9;
+  --stage-bg: #e4e4e4;
+  --placeholder: #d9d9d9;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 600ms;
+  --theme-dur: 450ms;
+  --font-ui: 'HAL Four Grotesk Variable Unlicensed', 'HAL Four Grotesk', system-ui, -apple-system, sans-serif;
+}
+
+/* Tema escuro: PROVISÓRIO, só para o botão já funcionar. Cores a definir. */
+:root[data-theme='dark'] {
+  --bg: #141414;
+  --nav-bg: #262626;
+  --nav-fg: #cfcfcf;
+  --nav-bg-hover: #303030;
+  --text: #ececec;
+  --text-muted: #7a7a7a;
+  --knob: #8a8a8a;
+  --stage-bg: #0a0a0a;
+  --placeholder: #2a2a2a;
 }
 
 * {
@@ -20,6 +50,7 @@ body {
   background: var(--bg);
   font-family: system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color var(--theme-dur) ease;
 }
 
 /* Mobile first: a tela ocupa tudo */
@@ -31,12 +62,640 @@ body {
   min-height: 100dvh;
   width: 100%;
   background: var(--bg);
+  transition: background-color var(--theme-dur) ease;
+}
+
+/* Nav bar
+   Home: três células iguais. Info: "home" encolhe para 125px sem fundo,
+   "Info" cresce e revela a foto embaixo, o botão da direita fica do tamanho do texto.
+   As pontas animam só flex-basis (um terço -> valor final), de forma monotônica;
+   "Info" absorve o resto. Animar flex-grow junto faria a ponta esquerda crescer
+   antes de encolher, empurrando o Info para a direita no início. */
+/* Fixa no topo ao rolar (home e projeto). Com o Info aberto volta ao fluxo,
+   porque a foto faz parte da nav e cobriria o conteúdo. */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 10px;
+}
+
+.navbar.is-info {
+  position: relative;
+}
+
+.navbar__cell {
+  position: relative;
+  flex: 0 0 calc((100% - 4px) / 3);
+  transition: flex-basis var(--dur) var(--ease);
+}
+
+.navbar__cell--info {
+  flex: 1 1 0;
+}
+
+.is-info .navbar__cell--home {
+  flex-basis: 125px;
+}
+
+/* Largura medida em JS (NavBar useOpenWidth); 0 como fallback, que para no min-content. */
+.is-info .navbar__cell--extra {
+  flex-basis: var(--extra-open, 0);
+}
+
+.navbar__btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 0;
+  background: var(--nav-glass);
+  -webkit-backdrop-filter: var(--nav-blur);
+  backdrop-filter: var(--nav-blur);
+  color: var(--nav-fg);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 15px;
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    background-color var(--dur) var(--ease),
+    color var(--theme-dur) ease,
+    padding var(--dur) var(--ease),
+    opacity 200ms ease;
+}
+
+.navbar__btn:hover {
+  background: var(--nav-glass-hover);
+}
+
+.navbar__btn:focus-visible {
+  outline: 1px solid var(--nav-fg);
+  outline-offset: 2px;
+}
+
+.is-info .navbar__cell--home .navbar__btn {
+  padding-left: 0;
+  background: transparent;
+}
+
+.is-info .navbar__cell--home .navbar__btn:hover {
+  opacity: 0.55;
+}
+
+/* Menu (dropdown sob o botão "Menu")
+   Linha 1: idioma + interruptor de tema; linha 2: contato (mailto).
+   Revela de cima para baixo, como a foto do Info, com os itens em cascata.
+   O recorte (clip-path) só existe durante a animação de abertura: um clip-path
+   permanente no container anularia o backdrop-filter (vidro) dos botões. */
+.navmenu {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  visibility: hidden;
+  transition: visibility 0s 250ms;
+}
+
+.navmenu.is-open {
+  visibility: visible;
+  transition: none;
+  animation: reveal-down 500ms var(--ease) backwards;
+}
+
+/* A opacidade fica nos próprios botões (não nas linhas), pelo mesmo motivo. */
+.navmenu :is(.navbar__btn, .navmenu__theme) {
+  opacity: 0;
+  translate: 0 -6px;
+  transition:
+    opacity 200ms ease,
+    translate 400ms var(--ease),
+    background-color var(--theme-dur) ease;
+}
+
+.navmenu.is-open :is(.navbar__btn, .navmenu__theme) {
+  opacity: 1;
+  translate: none;
+  transition:
+    opacity 350ms ease calc(60ms + var(--i) * 60ms),
+    translate 500ms var(--ease) calc(60ms + var(--i) * 60ms),
+    background-color var(--theme-dur) ease;
+}
+
+.navmenu__row {
+  display: flex;
+  gap: 2px;
+}
+
+.navmenu__row .navbar__btn {
+  flex: 1 1 0;
+  width: auto;
+}
+
+/* Interruptor de tema: o quadradinho fica embaixo no claro e sobe no escuro. */
+.navmenu__theme {
+  position: relative;
+  flex: 0 0 14px;
+  align-self: stretch;
+  border: 0;
+  background: var(--nav-glass);
+  -webkit-backdrop-filter: var(--nav-blur);
+  backdrop-filter: var(--nav-blur);
+  cursor: pointer;
+}
+
+.navmenu__theme:hover {
+  background: var(--nav-glass-hover);
+}
+
+.navmenu__theme:focus-visible {
+  outline: 1px solid var(--nav-fg);
+  outline-offset: 2px;
+}
+
+.navmenu__knob {
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--knob);
+  transition:
+    bottom 450ms var(--ease),
+    background-color var(--theme-dur) ease;
+}
+
+[data-theme='dark'] .navmenu__knob {
+  bottom: calc(100% - 12px);
+}
+
+/* Rótulo que troca de texto */
+/* O rótulo escondido sai do fluxo para não definir a largura do botão
+   (ex.: "En" não pode ficar com a largura de "Menu"). */
+.swap {
+  position: relative;
+  display: grid;
+  overflow-x: visible;
+  overflow-y: clip;
+}
+
+/* Quem entra: aparece com um leve atraso, depois que o outro já saiu. */
+.swap > span {
+  grid-area: 1 / 1;
+  transition:
+    opacity 300ms ease 120ms,
+    transform var(--dur) var(--ease);
+}
+
+/* Quem sai: some rápido, antes de a célula encolher o bastante para cortá-lo. */
+.swap[data-swapped='true'] > .swap__from,
+.swap[data-swapped='false'] > .swap__to {
+  position: absolute;
+  opacity: 0;
+  transition:
+    opacity 140ms ease,
+    transform 400ms var(--ease);
+}
+
+.swap[data-swapped='true'] > .swap__from {
+  transform: translateY(-60%);
+}
+
+.swap[data-swapped='false'] > .swap__to {
+  transform: translateY(60%);
+}
+
+/* Foto abaixo do Info: mesma largura do botão, quadrada, revelada de cima para baixo.
+   Fica no fluxo (grid 0fr -> 1fr anima a altura) para o conteúdo do Info vir logo depois. */
+.navbar__photo {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 450ms var(--ease);
+}
+
+.navbar__photo-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.navbar__photo-frame {
+  margin-top: 4px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--nav-bg);
+}
+
+.navbar__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
+  transition: transform 900ms var(--ease);
+}
+
+.is-info .navbar__photo {
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 700ms var(--ease) 120ms;
+}
+
+.is-info .navbar__photo img {
+  transform: scale(1);
+}
+
+/* Info
+   Grid de 2 colunas, margem 10px, gutter 10px. O rótulo "About" sobe para
+   ao lado da foto: a margem negativa = padding inferior da nav + altura da linha. */
+.info {
+  --line: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 10px;
+  margin-top: calc(-10px - var(--line));
+  padding: 0 10px 40px;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: var(--line);
+  transition:
+    opacity 250ms ease,
+    color var(--theme-dur) ease;
+}
+
+.info.is-leaving {
+  opacity: 0;
+}
+
+.info__span {
+  grid-column: 1 / -1;
+}
+
+.info__col2 {
+  grid-column: 2;
+}
+
+.info__label {
+  margin-bottom: 16px;
+  color: var(--text-muted);
+  font: inherit;
+  transition: color var(--theme-dur) ease;
+}
+
+.info__cta {
+  margin-top: 16px;
+}
+
+.info__section {
+  margin-top: 26px;
+}
+
+.info__split {
+  margin-top: 30px;
+}
+
+.info__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 10px;
+  line-height: 17px;
+}
+
+.info__list {
+  list-style: none;
+}
+
+/* Dentro de Contato, os grupos são separados por uma linha em branco. */
+.info__address {
+  margin-top: var(--line);
+  font-style: normal;
+}
+
+.info__social {
+  margin-top: var(--line);
+}
+
+.info a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.info a:hover {
+  opacity: 0.55;
+}
+
+.info .info__email {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+/* Entrada em cascata, depois que a foto começa a abrir */
+.info__block {
+  animation: info-in 700ms var(--ease) both;
+  animation-delay: calc(220ms + var(--i, 0) * 60ms);
+}
+
+@keyframes info-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Página atual (home ou projeto). Escondida enquanto o Info aparece. */
+.page {
+  color: var(--nav-fg);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+  transition: color var(--theme-dur) ease;
+}
+
+.page.is-hidden {
+  display: none;
+}
+
+/* Imagem com proporção reservada (Media.jsx) */
+.media {
+  overflow: hidden;
+  background: var(--placeholder);
+  transition: background-color var(--theme-dur) ease;
+}
+
+.media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Home: lista de projetos
+   Card fechado: imagem 16:9 + barra (título | + info).
+   Aberto: descrição (16px) + dados no grid de 2 colunas. A altura anima
+   com grid-template-rows 0fr -> 1fr, sem medir nada em JS. */
+.home {
+  display: flex;
+  flex-direction: column;
+  /* Sem padding no topo: o padding inferior da nav (10px) já faz o espaço. */
+  padding: 0 10px 40px;
+}
+
+.project {
+  animation: info-in 700ms var(--ease) both;
+  animation-delay: calc(80ms + var(--i, 0) * 80ms);
+}
+
+.project__media-link {
+  display: block;
+}
+
+.project__media-link .media img {
+  transition: transform 900ms var(--ease);
+}
+
+.project__media-link:hover .media img {
+  transform: scale(1.02);
+}
+
+.project__title a {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 200ms ease;
+}
+
+.project__title a:hover {
+  opacity: 0.55;
+}
+
+/* Página do projeto
+   A thumb sangra até o topo e as laterais; a nav (fundo transparente) fica por cima.
+   A margem negativa é a altura da nav fechada: 10 + 31 + 10. */
+.project-page {
+  --nav-h: 51px;
+  --thumb-reveal: 900ms;
+  margin-top: calc(-1 * var(--nav-h));
+}
+
+/* Entrada: a thumb se revela de cima para baixo; só quando termina,
+   a barra e depois a galeria aparecem. */
+/* Curva in-out: a revelação termina visualmente no fim do tempo, sem pausa
+   antes do resto da página entrar. */
+.project-page__thumb {
+  animation: reveal-down var(--thumb-reveal) cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+.project-page__thumb img {
+  animation: settle calc(var(--thumb-reveal) + 400ms) var(--ease) both;
+}
+
+.project-page__body {
+  padding: 0 10px 40px;
+}
+
+.project-page__body > * {
+  animation: info-in 700ms var(--ease) both;
+  animation-delay: var(--thumb-reveal);
+}
+
+.project-page__body > * + * {
+  animation-delay: calc(var(--thumb-reveal) + 120ms);
+}
+
+@keyframes reveal-down {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+@keyframes settle {
+  from {
+    transform: scale(1.06);
+  }
+}
+
+.project-page__gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+
+.project__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+}
+
+.project__title {
+  min-width: 0;
+  font: inherit;
+}
+
+.project__toggle {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: opacity 200ms ease;
+}
+
+.project__toggle:hover {
+  opacity: 0.55;
+}
+
+.project__toggle:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* "+" desenhado em CSS: a barra vertical recolhe e vira "-" quando abre. */
+.project__sign {
+  position: relative;
+  width: 7px;
+  height: 7px;
+}
+
+.project__sign::before,
+.project__sign::after {
+  content: '';
+  position: absolute;
+  background: currentColor;
+}
+
+.project__sign::before {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1.2px;
+  transform: translateY(-50%);
+}
+
+.project__sign::after {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1.2px;
+  transform: translateX(-50%);
+  transition: transform 400ms var(--ease);
+}
+
+.is-open .project__sign::after {
+  transform: translateX(-50%) scaleY(0);
+}
+
+.project__details {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 450ms var(--ease);
+}
+
+.is-open .project__details {
+  grid-template-rows: 1fr;
+  transition-duration: 650ms;
+}
+
+.project__details-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.project__details-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 5px 0;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 200ms ease,
+    transform 450ms var(--ease);
+}
+
+.is-open .project__details-inner {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 400ms ease 120ms,
+    transform 650ms var(--ease) 60ms;
+}
+
+.project__desc {
+  font-size: 16px;
+  line-height: 16px;
+}
+
+.project__meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 10px;
+  row-gap: 20px;
+}
+
+.project__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.project__meta dt {
+  font-size: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .info__block,
+  .project,
+  .project-page__thumb,
+  .project-page__thumb img,
+  .project-page__body > * {
+    animation: none;
+  }
+
+  .project *,
+  .project *::before,
+  .project *::after {
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .navbar *,
+  .navbar *::before,
+  .navbar *::after {
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+  }
 }
 
 /* Desktop: a tela vira um frame 402x874 centralizado */
 @media (min-width: 768px) {
   body {
-    background: #e4e4e4;
+    background: var(--stage-bg);
   }
 
   .stage {
@@ -52,7 +711,8 @@ body {
     min-height: 0;
     flex-shrink: 0;
     border-radius: 44px;
-    overflow: hidden;
+    overflow: hidden auto;
+    scrollbar-width: none;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 24px 60px rgba(0, 0, 0, 0.12);
   }
 }
