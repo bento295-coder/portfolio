@@ -10,7 +10,7 @@ const PAGE_THUMB_RATIO = '3:4'
 
 // Página do projeto: thumb sangrando no topo (a nav fica por cima),
 // barra "título | + info" e as fotos do projeto.
-export default function ProjectPage({ lang }) {
+export default function ProjectPage({ lang, onThumbRevealed }) {
   const { id } = useParams()
   const project = getProject(id)
 
@@ -21,7 +21,14 @@ export default function ProjectPage({ lang }) {
 
   return (
     <article className="project-page" key={project.id}>
-      <Media media={thumb} alt={project.title} className="project-page__thumb" eager />
+      <Media
+        media={thumb}
+        alt={project.title}
+        className="project-page__thumb"
+        eager
+        // avisa quando a thumb termina de se revelar (a nav entra depois)
+        onAnimationEnd={(e) => e.animationName === 'reveal-down' && onThumbRevealed?.()}
+      />
 
       <div className="project-page__body">
         <ProjectSummary project={project} lang={lang} titleAs="h1" />

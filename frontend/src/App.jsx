@@ -4,6 +4,7 @@ import NavBar from './components/NavBar.jsx'
 import InfoPanel from './components/InfoPanel.jsx'
 import Home from './components/Home.jsx'
 import ProjectPage from './components/ProjectPage.jsx'
+import Footer from './components/Footer.jsx'
 import { getInfo } from './content/info.js'
 
 const INFO_EXIT_MS = 250
@@ -85,11 +86,37 @@ function useIntroGate() {
   return [done, () => setDone(true)]
 }
 
+const NAV_AFTER_THUMB_MS = 300
+
+// Na página do projeto, a nav sai de cena até a thumb terminar de se revelar
+// (+ um instante), para a thumb ser vista inteira. Trava de segurança: 2,5s
+// (ex.: movimento reduzido, quando a animação da thumb não roda).
+function useProjectNavHold(isProject) {
+  const [hold, setHold] = useState(false)
+  const { pathname } = useLocation()
+
+  // layout effect: esconde antes da nova página aparecer na tela
+  useLayoutEffect(() => {
+    setHold(isProject && !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  }, [pathname, isProject])
+
+  useEffect(() => {
+    if (!hold) return
+    const t = setTimeout(() => setHold(false), 2500)
+    return () => clearTimeout(t)
+  }, [hold])
+
+  const release = () => setTimeout(() => setHold(false), NAV_AFTER_THUMB_MS)
+  return [hold, release]
+}
+
 export default function App() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const screenRef = useRef(null)
+  const isProject = pathname.startsWith('/projetos/')
   const [introDone, finishIntro] = useIntroGate()
+  const [navHold, releaseNav] = useProjectNavHold(isProject)
 
   const [infoOpen, setInfoOpen] = useState(false)
   useScrollTop(screenRef, infoOpen)
@@ -116,7 +143,8 @@ export default function App() {
     <div className="stage">
       <main ref={screenRef} className="screen">
         <NavBar
-          hidden={!introDone}
+          hidden={!introDone || navHold}
+          hideOnScroll={isProject}
           infoOpen={infoOpen}
           onHome={() => {
             setInfoOpen(false)
@@ -134,9 +162,14 @@ export default function App() {
         <div className={`page${infoMounted ? ' is-hidden' : ''}`}>
           <Routes>
             <Route path="/" element={<Home lang={lang} onIntroDone={finishIntro} />} />
-            <Route path="/projetos/:id" element={<ProjectPage lang={lang} />} />
+            <Route
+              path="/projetos/:id"
+              element={<ProjectPage lang={lang} onThumbRevealed={releaseNav} />}
+            />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          {/* Dentro da .page: aparece na home e nos projetos, some com o Info. */}
+          <Footer lang={lang} />
         </div>
         {infoMounted && <InfoPanel lang={lang} leaving={!infoOpen} />}
       </main>

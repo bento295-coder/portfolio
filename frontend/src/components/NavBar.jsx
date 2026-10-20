@@ -59,6 +59,29 @@ function useDismiss(open, ref, close) {
   }, [open, ref, close])
 }
 
+// Esconde ao rolar para baixo e volta ao rolar para cima (só onde `enabled`).
+// Perto do topo fica sempre visível; ignora tremidas menores que 4px.
+function useHideOnScroll(enabled) {
+  const [tucked, setTucked] = useState(false)
+
+  useEffect(() => {
+    setTucked(false)
+    if (!enabled) return
+    let last = window.scrollY
+    const onScroll = () => {
+      const y = window.scrollY
+      const delta = y - last
+      if (Math.abs(delta) < 4) return
+      setTucked(delta > 0 && y > 80)
+      last = y
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [enabled])
+
+  return tucked
+}
+
 function Menu({ open, lang, onToggleLang, theme, onToggleTheme, email, onClose }) {
   const t = ui[lang]
   const dark = theme === 'dark'
@@ -88,6 +111,7 @@ function Menu({ open, lang, onToggleLang, theme, onToggleTheme, email, onClose }
 
 export default function NavBar({
   hidden,
+  hideOnScroll,
   infoOpen,
   onHome,
   onToggleInfo,
@@ -105,6 +129,8 @@ export default function NavBar({
 
   useOpenWidth(navRef, extraLabelRef)
   useDismiss(menuOpen, navRef, () => setMenuOpen(false))
+  // Com Menu ou Info abertos, a nav não se esconde.
+  const tucked = useHideOnScroll(hideOnScroll) && !menuOpen && !infoOpen
 
   const closeMenuAnd = (fn) => () => {
     setMenuOpen(false)
@@ -114,7 +140,7 @@ export default function NavBar({
   return (
     <nav
       ref={navRef}
-      className={`navbar${infoOpen ? ' is-info' : ''}${hidden ? ' is-intro' : ''}`}
+      className={`navbar${infoOpen ? ' is-info' : ''}${hidden ? ' is-intro' : ''}${tucked ? ' is-tucked' : ''}`}
       aria-label="Principal"
       inert={hidden ? '' : undefined}
     >
