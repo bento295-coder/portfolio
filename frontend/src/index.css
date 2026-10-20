@@ -7,7 +7,7 @@
   --nav-alpha: 65%;
   --nav-glass: color-mix(in srgb, var(--nav-bg) var(--nav-alpha), transparent);
   --nav-glass-hover: color-mix(in srgb, var(--nav-bg-hover) var(--nav-alpha), transparent);
-  --nav-blur: blur(14px) saturate(140%);
+  --nav-blur: blur(6px) saturate(140%);
   --text: #1f1f1f;
   --text-muted: #8c8c8c;
   --knob: #f9f9f9;
@@ -296,6 +296,11 @@ body {
   background: var(--nav-bg);
 }
 
+/* Com foto (PNG/WebP sem fundo), o quadrado fica transparente; o cinza é só placeholder. */
+.navbar__photo-frame:has(img) {
+  background: transparent;
+}
+
 .navbar__photo img {
   display: block;
   width: 100%;
@@ -357,23 +362,27 @@ body {
   margin-top: 16px;
 }
 
-.info__section {
-  margin-top: 26px;
-}
-
-.info__split {
-  margin-top: 30px;
-}
-
-.info__cols {
+/* Abaixo do About: 3 linhas de 2 colunas (mesmo grid da página).
+   10px entre rótulo e conteúdo e entre as linhas. */
+.info__grid {
+  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  column-gap: 10px;
-  line-height: 17px;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.info__cell .info__label {
+  margin-bottom: 10px;
 }
 
 .info__list {
   list-style: none;
+}
+
+/* Clientes e Colaborações têm entrelinha mais aberta. */
+.info__list--loose {
+  line-height: 17px;
 }
 
 /* Dentro de Contato, os grupos são separados por uma linha em branco. */
@@ -395,7 +404,8 @@ body {
   opacity: 0.55;
 }
 
-.info .info__email {
+.info .info__link,
+.info__social a {
   text-decoration: underline;
   text-underline-offset: 2px;
   text-decoration-thickness: 1px;

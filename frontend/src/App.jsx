@@ -107,6 +107,7 @@ export default function App() {
           theme={theme}
           onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           email={getInfo(lang).contact.email}
+          photoSrc="/info/bento.webp"
         />
         {/* A página continua montada (mantém cards abertos etc.), só escondida enquanto o Info aparece. */}
         <div className={`page${infoMounted ? ' is-hidden' : ''}`}>

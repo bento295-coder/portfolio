@@ -5,10 +5,9 @@ const shared = {
     "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.",
 
   proficiencies: [
-    'Animation & 3D',
+    'Motion',
     'Brand Design',
     'Creative Direction',
-    'Creative Production',
     'Digital Design',
     'Type Design',
     'Web Development',
@@ -27,16 +26,11 @@ const shared = {
     { label: 'Linkedin', href: '#' },
   ],
 
-  // Cada lista é distribuída nas duas colunas.
-  clients: [
-    ['CCBB', 'Valor Economico'],
-    ['Galeria Refresco', 'Cavaca Records', 'bg Real', 'Trauma'],
-  ],
+  clients: ['CCBB', 'Valor Economico', 'Galeria Refresco', 'Cavaca Records', 'bg Real', 'Trauma'],
 
-  collaborators: [
-    ['Roma Joana', 'Augusto Erthal'],
-    ['Vitor Vigo', 'Rafaella Meigger', 'Tiago Ak'],
-  ],
+  collaborators: ['Roma Joana', 'Augusto Erthal', 'Vitor Vigo', 'Rafaella Meigger', 'Tiago Ak'],
+
+  credits: ['Site Designed & Coded by', 'Bento Avellar'],
 }
 
 const labels = {
@@ -47,6 +41,9 @@ const labels = {
     contact: 'Contato',
     clients: 'Clientes',
     collaborators: 'Colaborações',
+    // TODO: seção ainda sem nome no Figma
+    untitled: '????????????????????',
+    credits: 'Créditos',
   },
   en: {
     about: 'About',
@@ -55,6 +52,8 @@ const labels = {
     contact: 'Contact',
     clients: 'Clients',
     collaborators: 'Collaborations',
+    untitled: '????????????????????',
+    credits: 'Credits',
   },
 }
 
