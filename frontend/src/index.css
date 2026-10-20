@@ -1,7 +1,5 @@
 :root {
   --bg: #f7f7f7;
-  --frame-w: 402px;
-  --frame-h: 874px;
   --nav-bg: #e5e5e5;
   --nav-fg: #404040;
   --nav-bg-hover: #dcdcdc;
@@ -13,7 +11,6 @@
   --text: #1f1f1f;
   --text-muted: #8c8c8c;
   --knob: #f9f9f9;
-  --stage-bg: #e4e4e4;
   --placeholder: #d9d9d9;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --dur: 600ms;
@@ -30,7 +27,6 @@
   --text: #ececec;
   --text-muted: #7a7a7a;
   --knob: #8a8a8a;
-  --stage-bg: #0a0a0a;
   --placeholder: #2a2a2a;
 }
 
@@ -53,7 +49,8 @@ body {
   transition: background-color var(--theme-dur) ease;
 }
 
-/* Mobile first: a tela ocupa tudo */
+/* Mobile first, ocupando a tela toda em qualquer largura.
+   A versão específica para desktop será desenhada depois. */
 .stage {
   min-height: 100dvh;
 }
@@ -692,27 +689,3 @@ body {
   }
 }
 
-/* Desktop: a tela vira um frame 402x874 centralizado */
-@media (min-width: 768px) {
-  body {
-    background: var(--stage-bg);
-  }
-
-  .stage {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-
-  .screen {
-    width: var(--frame-w);
-    height: var(--frame-h);
-    min-height: 0;
-    flex-shrink: 0;
-    border-radius: 44px;
-    overflow: hidden auto;
-    scrollbar-width: none;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 24px 60px rgba(0, 0, 0, 0.12);
-  }
-}
