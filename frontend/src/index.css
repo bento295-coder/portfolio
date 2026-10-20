@@ -89,6 +89,32 @@ body {
   position: relative;
 }
 
+/* Entrada da nav: escondida durante a abertura da home (App useIntroGate);
+   depois os botões descem em cascata. A animação fica nos botões (não na nav)
+   porque opacidade num ancestral anularia o vidro (backdrop-filter). */
+.navbar.is-intro > .navbar__cell > .navbar__btn {
+  opacity: 0;
+}
+
+.navbar:not(.is-intro) > .navbar__cell > .navbar__btn {
+  animation: nav-in 700ms var(--ease) backwards;
+}
+
+.navbar > .navbar__cell:nth-child(2) > .navbar__btn {
+  animation-delay: 90ms;
+}
+
+.navbar > .navbar__cell:nth-child(3) > .navbar__btn {
+  animation-delay: 180ms;
+}
+
+@keyframes nav-in {
+  from {
+    opacity: 0;
+    translate: 0 -8px;
+  }
+}
+
 .navbar__cell {
   position: relative;
   flex: 0 0 calc((100% - 4px) / 3);
@@ -486,8 +512,40 @@ body {
   line-height: 21px;
   letter-spacing: -0.01em;
   text-wrap: pretty;
-  animation: info-in 800ms var(--ease) 350ms both;
   transition: color var(--theme-dur) ease;
+}
+
+/* Escrita letra a letra (Typewriter.jsx): cada letra entra 14ms depois da
+   anterior (fade de 280ms, as letras se sobrepõem), começando enquanto o
+   logo sobe. 84 letras ≈ 1,5s. */
+.typewriter {
+  --type-start: 350ms;
+  --type-step: 14ms;
+}
+
+.typewriter__word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.typewriter__char {
+  animation: type-in 280ms ease-out both;
+  animation-delay: calc(var(--type-start) + var(--c) * var(--type-step));
+}
+
+@keyframes type-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .hero__logo {
@@ -737,7 +795,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .info__block,
   .project,
-  .hero__intro,
+  .typewriter__char,
+  .navbar__btn,
   .hero__logo,
   .project-page__thumb,
   .project-page__thumb img,

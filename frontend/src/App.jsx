@@ -66,10 +66,30 @@ function useScrollTop(screenRef, infoOpen) {
   }, [infoOpen, screenRef])
 }
 
+// Na primeira entrada pela home, a nav só aparece quando a abertura termina
+// (fim da escrita da frase). Entrando direto num projeto, ou com movimento
+// reduzido, aparece na hora. Trava de segurança: 4s.
+function useIntroGate() {
+  const [done, setDone] = useState(
+    () =>
+      window.location.pathname !== '/' ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  )
+
+  useEffect(() => {
+    if (done) return
+    const t = setTimeout(() => setDone(true), 4000)
+    return () => clearTimeout(t)
+  }, [done])
+
+  return [done, () => setDone(true)]
+}
+
 export default function App() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const screenRef = useRef(null)
+  const [introDone, finishIntro] = useIntroGate()
 
   const [infoOpen, setInfoOpen] = useState(false)
   useScrollTop(screenRef, infoOpen)
@@ -96,6 +116,7 @@ export default function App() {
     <div className="stage">
       <main ref={screenRef} className="screen">
         <NavBar
+          hidden={!introDone}
           infoOpen={infoOpen}
           onHome={() => {
             setInfoOpen(false)
@@ -112,7 +133,7 @@ export default function App() {
         {/* A página continua montada (mantém cards abertos etc.), só escondida enquanto o Info aparece. */}
         <div className={`page${infoMounted ? ' is-hidden' : ''}`}>
           <Routes>
-            <Route path="/" element={<Home lang={lang} />} />
+            <Route path="/" element={<Home lang={lang} onIntroDone={finishIntro} />} />
             <Route path="/projetos/:id" element={<ProjectPage lang={lang} />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

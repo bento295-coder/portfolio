@@ -87,6 +87,7 @@ function Menu({ open, lang, onToggleLang, theme, onToggleTheme, email, onClose }
 }
 
 export default function NavBar({
+  hidden,
   infoOpen,
   onHome,
   onToggleInfo,
@@ -111,10 +112,15 @@ export default function NavBar({
   }
 
   return (
-    <nav ref={navRef} className={`navbar${infoOpen ? ' is-info' : ''}`} aria-label="Principal">
+    <nav
+      ref={navRef}
+      className={`navbar${infoOpen ? ' is-info' : ''}${hidden ? ' is-intro' : ''}`}
+      aria-label="Principal"
+      inert={hidden ? '' : undefined}
+    >
       <div className="navbar__cell navbar__cell--home">
         <button type="button" className="navbar__btn" onClick={closeMenuAnd(onHome)} aria-label={t.home}>
-          <SwapLabel from="B - Av" to="Bento Avellar" swapped={infoOpen} />
+          <SwapLabel from="Bento Avellar" to="B - Av" swapped={infoOpen} />
         </button>
       </div>
 
