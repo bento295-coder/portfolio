@@ -1,8 +1,11 @@
 // Conteúdo da tela Info. Editar textos aqui, sem tocar no layout.
-// `shared` vale para os dois idiomas; `labels` muda com o idioma.
+// `shared` vale para os dois idiomas (exceto `about`, que tem pt/en);
+// `labels` muda com o idioma.
 const shared = {
-  about:
-    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.",
+  about: {
+    pt: 'Bento Avellar é designer baseado em Niterói e cria desde 2019. Está concluindo Design Gráfico na Universidade Veiga de Almeida. Gosta de desenvolver sistemas visuais adaptáveis, muitas vezes guiados pela tipografia e pelas novas tecnologias. Fora da tela, vive de música e produz eventos que movimentam a cena cultural da cidade.',
+    en: "Bento Avellar is a designer based in Niterói, creating since 2019. Currently completing a degree in Graphic Design at Universidade Veiga de Almeida. Drawn to building adaptable visual systems, often guided by typography and new technologies. Away from the screen, Bento lives for music and produces events that move the city's cultural scene.",
+  },
 
   proficiencies: [
     'Motion',
@@ -20,17 +23,16 @@ const shared = {
     city: 'Rio de Janeiro',
   },
 
-  // TODO: links reais
   social: [
-    { label: 'Instagram', href: '#' },
-    { label: 'Linkedin', href: '#' },
+    { label: 'Instagram', href: 'https://www.instagram.com/_avllr_/' },
+    { label: 'Linkedin', href: 'https://www.linkedin.com/in/bento-avellar-040666195/' },
   ],
 
   clients: ['CCBB', 'Valor Economico', 'Galeria Refresco', 'Cavaca Records', 'bg Real', 'Trauma'],
 
   collaborators: ['Roma Joana', 'Augusto Erthal', 'Vitor Vigo', 'Rafaella Meigger', 'Tiago Ak'],
 
-  credits: ['Site Designed & Coded by', 'Bento Avellar'],
+  credits: ['Site Design & Code by', 'Bento Avellar'],
 }
 
 const labels = {
@@ -57,4 +59,4 @@ const labels = {
   },
 }
 
-export const getInfo = (lang) => ({ ...shared, labels: labels[lang] })
+export const getInfo = (lang) => ({ ...shared, about: shared.about[lang], labels: labels[lang] })

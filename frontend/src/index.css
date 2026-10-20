@@ -10,12 +10,14 @@
   --nav-blur: blur(6px) saturate(140%);
   --text: #1f1f1f;
   --text-muted: #8c8c8c;
+  --text-intro: #a6a6a6; /* frase da home: claro, mas legível */
+  --logo-tint: rgb(0 0 0 / 0.12); /* "B-Av" de vidro da abertura (Figma: preto 12%) */
   --knob: #f9f9f9;
   --placeholder: #d9d9d9;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --dur: 600ms;
   --theme-dur: 450ms;
-  --font-ui: 'HAL Four Grotesk Variable Unlicensed', 'HAL Four Grotesk', system-ui, -apple-system, sans-serif;
+  --font-ui: 'Schibsted Grotesk Variable', system-ui, -apple-system, sans-serif;
 }
 
 /* Tema escuro: PROVISÓRIO, só para o botão já funcionar. Cores a definir. */
@@ -26,6 +28,8 @@
   --nav-bg-hover: #303030;
   --text: #ececec;
   --text-muted: #7a7a7a;
+  --text-intro: #4a4a4a;
+  --logo-tint: rgb(255 255 255 / 0.1);
   --knob: #8a8a8a;
   --placeholder: #2a2a2a;
 }
@@ -44,7 +48,7 @@ body,
 
 body {
   background: var(--bg);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-ui);
   -webkit-font-smoothing: antialiased;
   transition: background-color var(--theme-dur) ease;
 }
@@ -457,15 +461,70 @@ body {
    Aberto: descrição (16px) + dados no grid de 2 colunas. A altura anima
    com grid-template-rows 0fr -> 1fr, sem medir nada em JS. */
 .home {
+  padding: 0 10px 40px;
+}
+
+/* Abertura da home: ocupa a primeira tela (abaixo da nav, 51px).
+   A frase fica no meio da tela; o "B-Av" vertical é uma camada de vidro
+   por cima dela: tinta translúcida + leve desfoque do que está atrás,
+   recortada no formato do logo (mask). Ao rolar, vêm os projetos. */
+.hero {
+  position: relative;
+  height: calc(100svh - 51px);
+}
+
+.hero__intro {
+  position: absolute;
+  top: calc(50svh - 51px);
+  left: 0;
+  right: 0;
+  translate: 0 -50%;
+  color: var(--text-intro);
+  font: inherit;
+  font-size: 22px;
+  font-weight: 580;
+  line-height: 21px;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+  animation: info-in 800ms var(--ease) 350ms both;
+  transition: color var(--theme-dur) ease;
+}
+
+.hero__logo {
+  position: absolute;
+  top: 4px;
+  bottom: 35px;
+  left: 50%;
+  translate: -50% 0;
+  aspect-ratio: 276 / 784;
+  max-width: 100%;
+  background: var(--logo-tint);
+  -webkit-backdrop-filter: blur(1.3px);
+  backdrop-filter: blur(1.3px);
+  -webkit-mask: url('/brand/b-av.svg') center / contain no-repeat;
+  mask: url('/brand/b-av.svg') center / contain no-repeat;
+  /* Sobe de baixo para cima, no sentido de leitura do "B-Av". */
+  animation: reveal-up 1100ms cubic-bezier(0.65, 0, 0.35, 1) both;
+  transition: background-color var(--theme-dur) ease;
+}
+
+@keyframes reveal-up {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+.home__projects {
   display: flex;
   flex-direction: column;
-  /* Sem padding no topo: o padding inferior da nav (10px) já faz o espaço. */
-  padding: 0 10px 40px;
 }
 
 .project {
   animation: info-in 700ms var(--ease) both;
-  animation-delay: calc(80ms + var(--i, 0) * 80ms);
+  animation-delay: calc(160ms + var(--i, 0) * 80ms);
 }
 
 .project__media-link {
@@ -678,6 +737,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .info__block,
   .project,
+  .hero__intro,
+  .hero__logo,
   .project-page__thumb,
   .project-page__thumb img,
   .project-page__body > * {

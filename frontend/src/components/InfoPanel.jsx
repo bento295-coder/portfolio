@@ -4,12 +4,22 @@ function Label({ children }) {
   return <h2 className="info__label">{children}</h2>
 }
 
+// Links para outros sites abrem em nova aba, para o portfólio continuar aberto.
+function ExternalLink({ href, children }) {
+  const external = /^https?:\/\//.test(href)
+  return (
+    <a href={href} {...(external && { target: '_blank', rel: 'noopener noreferrer' })}>
+      {children}
+    </a>
+  )
+}
+
 function List({ items, className = '' }) {
   return (
     <ul className={`info__list ${className}`}>
       {items.map((item) => (
         <li key={item.label ?? item}>
-          {item.href ? <a href={item.href}>{item.label}</a> : item}
+          {item.href ? <ExternalLink href={item.href}>{item.label}</ExternalLink> : item}
         </li>
       ))}
     </ul>
