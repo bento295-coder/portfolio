@@ -1,0 +1,58 @@
+:root {
+  --bg: #f7f7f7;
+  --frame-w: 402px;
+  --frame-h: 874px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Mobile first: a tela ocupa tudo */
+.stage {
+  min-height: 100dvh;
+}
+
+.screen {
+  min-height: 100dvh;
+  width: 100%;
+  background: var(--bg);
+}
+
+/* Desktop: a tela vira um frame 402x874 centralizado */
+@media (min-width: 768px) {
+  body {
+    background: #e4e4e4;
+  }
+
+  .stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .screen {
+    width: var(--frame-w);
+    height: var(--frame-h);
+    min-height: 0;
+    flex-shrink: 0;
+    border-radius: 44px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 24px 60px rgba(0, 0, 0, 0.12);
+  }
+}
