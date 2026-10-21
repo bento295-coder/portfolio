@@ -12,7 +12,11 @@
   "thumb": "/projects/sim-sao-paulo/thumb.png",
   "pageThumb": "/projects/sim-sao-paulo/page-thumb.png",
   "images": [
-    { "src": "", "ratio": "16:9" },
-    { "src": "", "ratio": "3:4" }
+    {
+      "src": ""
+    },
+    {
+      "src": ""
+    }
   ]
 }

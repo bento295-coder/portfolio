@@ -15,16 +15,9 @@
   </head>
   <body>
     <script>
-      const ratio = {
-        label: 'Proporção',
-        name: 'ratio',
-        widget: 'select',
-        options: [
-          { label: '16:9 (horizontal)', value: '16:9' },
-          { label: '3:4 (vertical)', value: '3:4' },
-        ],
-        default: '16:9',
-      }
+      // Imagens ou vídeos. Vídeo (.mp4/.webm) toca sozinho, em loop e sem som.
+      // Widget "file" (e não "image") para aceitar vídeo também.
+      const VIDEO_HINT = 'Imagem ou vídeo (.mp4/.webm, até ~10 MB; toca em loop, sem som).'
 
       CMS.init({
         config: {
@@ -71,24 +64,24 @@
                 {
                   label: 'Thumb da home (16:9)',
                   name: 'thumb',
-                  widget: 'image',
-                  hint: 'Imagem do card na home. Proporção 16:9.',
+                  widget: 'file',
+                  hint: `Card na home, sempre em 16:9 (o excesso é cortado). ${VIDEO_HINT}`,
                 },
                 {
                   label: 'Thumb da página (3:4)',
                   name: 'pageThumb',
-                  widget: 'image',
+                  widget: 'file',
                   required: false,
-                  hint: 'Topo da página do projeto. Opcional: sem ela, a thumb da home é recortada em 3:4.',
+                  hint: `Topo da página do projeto, sempre em 3:4 (o excesso é cortado). Opcional: sem ela, a thumb da home é recortada em 3:4. ${VIDEO_HINT}`,
                 },
                 {
                   label: 'Galeria',
                   name: 'images',
                   widget: 'list',
                   required: false,
-                  summary: '{{fields.ratio}}',
-                  hint: 'Fotos da página do projeto, na ordem em que aparecem.',
-                  fields: [{ label: 'Imagem', name: 'src', widget: 'image' }, ratio],
+                  summary: '{{fields.src}}',
+                  hint: `Mídias da página do projeto, na ordem em que aparecem, cada uma inteira na proporção em que foi exportada (sem corte). ${VIDEO_HINT}`,
+                  fields: [{ label: 'Arquivo', name: 'src', widget: 'file' }],
                 },
                 {
                   label: 'Ordem na home',

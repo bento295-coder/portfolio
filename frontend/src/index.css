@@ -474,6 +474,43 @@ body {
   }
 }
 
+/* Conteúdo em HTML puro gerado no build (scripts/seo-plugin.js), para
+   buscadores e IAs. O React o substitui ao carregar; para não piscar, ele só
+   aparece depois de 2s, isto é, só se o JavaScript não carregar. */
+.prerender {
+  padding: 61px 10px 40px;
+  color: var(--text);
+  font: 500 12px/14px var(--font-ui);
+  opacity: 0;
+  animation: prerender-show 0s 2s forwards;
+}
+
+.prerender h1 {
+  margin-bottom: 24px;
+  font-size: 22px;
+  line-height: 21px;
+}
+
+.prerender h2 {
+  margin: 20px 0 8px;
+  color: var(--text-muted);
+  font-size: inherit;
+}
+
+.prerender ul {
+  list-style: none;
+}
+
+.prerender a {
+  color: inherit;
+}
+
+@keyframes prerender-show {
+  to {
+    opacity: 1;
+  }
+}
+
 /* Página atual (home ou projeto). Escondida enquanto o Info aparece. */
 .page {
   color: var(--nav-fg);
@@ -527,11 +564,23 @@ body {
   transition: background-color var(--theme-dur) ease;
 }
 
-.media img {
+.media img,
+.media video {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Galeria: proporção natural, mídia inteira (sem corte). Com arquivo, sem
+   fundo cinza: imagens com transparência aparecem como foram exportadas. */
+.media--natural img,
+.media--natural video {
+  height: auto;
+}
+
+.media--natural:has(> img, > video) {
+  background: transparent;
 }
 
 /* Home: lista de projetos
@@ -641,11 +690,11 @@ body {
   display: block;
 }
 
-.project__media-link .media img {
+.project__media-link .media :is(img, video) {
   transition: transform 900ms var(--ease);
 }
 
-.project__media-link:hover .media img {
+.project__media-link:hover .media :is(img, video) {
   transform: scale(1.02);
 }
 
@@ -742,7 +791,7 @@ body {
   animation: reveal-down var(--thumb-reveal) cubic-bezier(0.65, 0, 0.35, 1) both;
 }
 
-.project-page__thumb img {
+.project-page__thumb :is(img, video) {
   animation: settle calc(var(--thumb-reveal) + 400ms) var(--ease) both;
 }
 
@@ -917,7 +966,7 @@ body {
   .navbar__btn,
   .hero__logo,
   .project-page__thumb,
-  .project-page__thumb img,
+  .project-page__thumb :is(img, video),
   .project-page__body > * {
     animation: none;
   }

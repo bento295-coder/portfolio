@@ -3,8 +3,10 @@
 // → /projetos/sim-sao-paulo.
 //
 // Cada projeto aparece em dois lugares: no card da home (thumb 16:9) e na
-// página do projeto (thumb 3:4 + galeria). Imagens da galeria: '16:9'
-// (horizontal) ou '3:4' (vertical).
+// página do projeto (thumb 3:4 + galeria). Thumbs têm proporção fixa
+// (preenchem e cortam o excesso); a galeria usa a proporção natural de cada
+// arquivo (largura/altura lidas no build por scripts/media-size-plugin.js).
+// Qualquer mídia pode ser imagem ou vídeo (.mp4/.webm: loop, sem som).
 const files = import.meta.glob('./projects/*.json', { eager: true, import: 'default' })
 
 // Converte o formato do painel para o que os componentes usam.
@@ -19,7 +21,11 @@ const normalize = (path, data) => ({
   thumb: { src: data.thumb || null, ratio: '16:9' },
   // sem thumb própria, a página recorta a thumb da home em 3:4
   pageThumb: data.pageThumb ? { src: data.pageThumb, ratio: '3:4' } : null,
-  images: (data.images ?? []).map((img) => ({ src: img.src || null, ratio: img.ratio || '16:9' })),
+  images: (data.images ?? []).map((img) => ({
+    src: img.src || null,
+    width: img.width,
+    height: img.height,
+  })),
   published: data.published !== false,
 })
 

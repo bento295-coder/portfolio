@@ -6,6 +6,20 @@ import Home from './components/Home.jsx'
 import ProjectPage from './components/ProjectPage.jsx'
 import Footer from './components/Footer.jsx'
 import { getInfo } from './content/info.js'
+import { getProject } from './content/projects.js'
+import { seo } from './content/seo.js'
+
+// Título e descrição da aba acompanham a página (o build já entrega certo no
+// primeiro carregamento; isto cobre a navegação dentro do site).
+function useDocumentMeta(pathname) {
+  useEffect(() => {
+    const id = pathname.match(/^\/projetos\/([^/]+)/)?.[1]
+    const project = id && getProject(id)
+    document.title = project ? `${project.title} — ${seo.name}` : seo.title
+    const meta = document.querySelector('meta[name="description"]')
+    if (meta) meta.content = project ? `${project.title} — ${project.description.pt}` : seo.description
+  }, [pathname])
+}
 
 const INFO_EXIT_MS = 250
 // No modo camada, a página só volta depois que a foto da nav recolhe (450ms),
@@ -123,6 +137,7 @@ export default function App() {
   const { pathname } = useLocation()
   const screenRef = useRef(null)
   const isProject = pathname.startsWith('/projetos/')
+  useDocumentMeta(pathname)
   const [introDone, finishIntro] = useIntroGate()
   const [navHold, releaseNav] = useProjectNavHold(isProject)
 
