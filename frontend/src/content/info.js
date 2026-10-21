@@ -43,8 +43,6 @@ const labels = {
     contact: 'Contato',
     clients: 'Clientes',
     collaborators: 'Colaborações',
-    // TODO: seção ainda sem nome no Figma
-    untitled: '????????????????????',
     credits: 'Créditos',
   },
   en: {
@@ -54,7 +52,6 @@ const labels = {
     contact: 'Contact',
     clients: 'Clients',
     collaborators: 'Collaborations',
-    untitled: '????????????????????',
     credits: 'Credits',
   },
 }

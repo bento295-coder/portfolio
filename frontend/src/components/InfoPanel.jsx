@@ -27,9 +27,9 @@ function List({ items, className = '' }) {
 }
 
 // Célula do grid de 2 colunas abaixo do About: rótulo + conteúdo.
-function Cell({ label, index, children }) {
+function Cell({ label, index, className = '', children }) {
   return (
-    <div className="info__block info__cell" style={{ '--i': index }}>
+    <div className={`info__block info__cell ${className}`} style={{ '--i': index }}>
       <Label>{label}</Label>
       {children}
     </div>
@@ -78,9 +78,7 @@ export default function InfoPanel({ lang, leaving }) {
           <List items={info.collaborators} className="info__list--loose" />
         </Cell>
 
-        <Cell label={labels.untitled} index={4} />
-
-        <Cell label={labels.credits} index={4}>
+        <Cell label={labels.credits} index={4} className="info__cell--col2">
           <p>
             {info.credits[0]}
             <br />

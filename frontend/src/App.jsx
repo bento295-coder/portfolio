@@ -8,6 +8,14 @@ import Footer from './components/Footer.jsx'
 import { getInfo } from './content/info.js'
 
 const INFO_EXIT_MS = 250
+// No modo camada, a página só volta depois que a foto da nav recolhe (450ms),
+// senão o conteúdo pularia enquanto a nav encolhe.
+const INFO_EXIT_OVERLAY_MS = 500
+
+// Como o Info aparece (em teste, decisão do usuário):
+//   'overlay' → camada translúcida por cima da página atual
+//   'page'    → substitui a página (versão anterior)
+const INFO_MODE = 'overlay'
 
 // Mantém o componente montado durante a animação de saída.
 function usePresence(open, exitMs) {
@@ -120,7 +128,28 @@ export default function App() {
 
   const [infoOpen, setInfoOpen] = useState(false)
   useScrollTop(screenRef, infoOpen)
-  const infoMounted = usePresence(infoOpen, INFO_EXIT_MS)
+  const infoMounted = usePresence(infoOpen, INFO_MODE === 'overlay' ? INFO_EXIT_OVERLAY_MS : INFO_EXIT_MS)
+  const overlay = INFO_MODE === 'overlay'
+
+  // Modo camada: a página fica congelada atrás do Info, na posição em que
+  // estava; ao fechar, a rolagem volta exatamente para esse ponto.
+  const savedScroll = useRef(0)
+  const pageRef = useRef(null)
+  const frozenTop = useRef(0)
+  const toggleInfo = () => {
+    if (!infoOpen) {
+      savedScroll.current = window.scrollY
+      // posição da página na tela agora (ela começa abaixo da nav)
+      frozenTop.current = pageRef.current.getBoundingClientRect().top
+    }
+    setInfoOpen((open) => !open)
+  }
+  useLayoutEffect(() => {
+    if (overlay && !infoMounted && savedScroll.current) {
+      window.scrollTo(0, savedScroll.current)
+      savedScroll.current = 0
+    }
+  }, [overlay, infoMounted])
   const [lang, setLang] = useStoredState('lang', browserLang)
   const [theme, setTheme] = useStoredState('theme', () => 'light')
 
@@ -148,9 +177,12 @@ export default function App() {
           infoOpen={infoOpen}
           onHome={() => {
             setInfoOpen(false)
-            if (pathname !== '/') navigate('/')
+            if (pathname !== '/') {
+              savedScroll.current = 0
+              navigate('/')
+            }
           }}
-          onToggleInfo={() => setInfoOpen((open) => !open)}
+          onToggleInfo={toggleInfo}
           lang={lang}
           onToggleLang={() => setLang(lang === 'pt' ? 'en' : 'pt')}
           theme={theme}
@@ -158,8 +190,13 @@ export default function App() {
           email={getInfo(lang).contact.email}
           photoSrc="/info/bento.webp"
         />
-        {/* A página continua montada (mantém cards abertos etc.), só escondida enquanto o Info aparece. */}
-        <div className={`page${infoMounted ? ' is-hidden' : ''}`}>
+        {/* A página continua montada (mantém cards abertos etc.). Com o Info:
+            modo "page" esconde; modo "overlay" congela atrás da camada. */}
+        <div
+          ref={pageRef}
+          className={`page${infoMounted ? (overlay ? ' is-behind' : ' is-hidden') : ''}`}
+          style={overlay && infoMounted ? { top: frozenTop.current } : undefined}
+        >
           <Routes>
             <Route path="/" element={<Home lang={lang} onIntroDone={finishIntro} />} />
             <Route
@@ -171,6 +208,9 @@ export default function App() {
           {/* Dentro da .page: aparece na home e nos projetos, some com o Info. */}
           <Footer lang={lang} />
         </div>
+        {overlay && infoMounted && (
+          <div className={`info-backdrop${infoOpen ? '' : ' is-leaving'}`} aria-hidden="true" />
+        )}
         {infoMounted && <InfoPanel lang={lang} leaving={!infoOpen} />}
       </main>
     </div>

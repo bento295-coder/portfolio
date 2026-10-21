@@ -1,85 +1,38 @@
-// Projetos, na ordem de exibição da home.
+// Projetos: um arquivo JSON por projeto em ./projects/, editados pelo painel
+// (Decap CMS em /admin). O nome do arquivo é o endereço: sim-sao-paulo.json
+// → /projetos/sim-sao-paulo.
 //
-// Mídia: { src, ratio }. src é um caminho em frontend/public
-// (ex.: '/projects/sim-sp/thumb.jpg'); null mostra o placeholder.
-// ratio: '16:9' para imagens que funcionam melhor na horizontal,
-//        '3:4' para as que funcionam melhor na vertical.
-// A thumb é 16:9 no card da home. Na página do projeto ela aparece em 3:4
-// (recortada); para usar uma imagem própria ali, adicione pageThumb: { src, ratio }.
-// description: por idioma.
-export const projects = [
-  {
-    id: 'sim-sao-paulo',
-    title: 'bgReal & Cavaca Records - SIM São Paulo',
-    thumb: { src: '/projects/sim-sao-paulo/thumb.png', ratio: '16:9' },
-    pageThumb: { src: '/projects/sim-sao-paulo/page-thumb.png', ratio: '3:4' },
-    images: [
-      { src: null, ratio: '16:9' },
-      { src: null, ratio: '3:4' },
-    ],
-    description: {
-      pt: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966,",
-      en: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966,",
-    },
-    year: '2026',
-    role: 'Poster',
-    client: 'bgReal & Cavaca Records',
-  },
-  // TODO: projetos reais. Abaixo, placeholders para ver a lista.
-  {
-    id: 'projeto-2',
-    title: 'Projeto 2 - Placeholder',
-    thumb: { src: null, ratio: '16:9' },
-    images: [
-      { src: null, ratio: '3:4' },
-      { src: null, ratio: '16:9' },
-      { src: null, ratio: '16:9' },
-    ],
-    description: {
-      pt: 'Descrição do projeto.',
-      en: 'Project description.',
-    },
-    year: '2025',
-    role: 'Brand Design',
-    client: 'Cliente',
-  },
-  {
-    id: 'projeto-3',
-    title: 'Projeto 3 - Placeholder',
-    thumb: { src: null, ratio: '16:9' },
-    images: [{ src: null, ratio: '16:9' }],
-    description: {
-      pt: 'Descrição do projeto.',
-      en: 'Project description.',
-    },
-    year: '2025',
-    role: 'Web Development',
-    client: 'Cliente',
-  },
-  {
-    id: 'projeto-4',
-    title: 'Projeto 4 - Placeholder',
-    // Teste: reusa a imagem do SIM para ver o vidro da nav ao rolar.
-    thumb: { src: '/projects/sim-sao-paulo/thumb.png', ratio: '16:9' },
-    images: [
-      { src: null, ratio: '16:9' },
-      { src: null, ratio: '3:4' },
-    ],
-    description: {
-      pt: 'Descrição do projeto.',
-      en: 'Project description.',
-    },
-    year: '2024',
-    role: 'Type Design',
-    client: 'Cliente',
-  },
-]
+// Cada projeto aparece em dois lugares: no card da home (thumb 16:9) e na
+// página do projeto (thumb 3:4 + galeria). Imagens da galeria: '16:9'
+// (horizontal) ou '3:4' (vertical).
+const files = import.meta.glob('./projects/*.json', { eager: true, import: 'default' })
+
+// Converte o formato do painel para o que os componentes usam.
+const normalize = (path, data) => ({
+  id: path.split('/').pop().replace(/\.json$/, ''),
+  title: data.title,
+  order: data.order ?? 999,
+  description: data.description ?? { pt: '', en: '' },
+  year: data.year ?? '',
+  service: data.service ?? '',
+  client: data.client ?? '',
+  thumb: { src: data.thumb || null, ratio: '16:9' },
+  // sem thumb própria, a página recorta a thumb da home em 3:4
+  pageThumb: data.pageThumb ? { src: data.pageThumb, ratio: '3:4' } : null,
+  images: (data.images ?? []).map((img) => ({ src: img.src || null, ratio: img.ratio || '16:9' })),
+  published: data.published !== false,
+})
+
+export const projects = Object.entries(files)
+  .map(([path, data]) => normalize(path, data))
+  .filter((p) => p.published)
+  .sort((a, b) => a.order - b.order)
 
 export const getProject = (id) => projects.find((p) => p.id === id)
 
 export const projectPath = (id) => `/projetos/${id}`
 
 export const projectLabels = {
-  pt: { year: 'Ano', role: 'Role', client: 'Cliente' },
-  en: { year: 'Year', role: 'Role', client: 'Client' },
+  pt: { year: 'Ano', service: 'Serviço', client: 'Cliente' },
+  en: { year: 'Year', service: 'Service', client: 'Client' },
 }

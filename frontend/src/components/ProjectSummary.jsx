@@ -42,7 +42,7 @@ export default function ProjectSummary({ project, lang, titleTo, titleAs: Title 
             <p className="project__desc">{project.description[lang]}</p>
             <dl className="project__meta">
               <Meta label={labels.year} value={project.year} />
-              <Meta label={labels.role} value={project.role} />
+              <Meta label={labels.service} value={project.service} />
               <Meta label={labels.client} value={project.client} />
             </dl>
           </div>

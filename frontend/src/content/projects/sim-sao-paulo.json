@@ -1,0 +1,18 @@
+{
+  "title": "bgReal & Cavaca Records - SIM São Paulo",
+  "order": 1,
+  "published": true,
+  "description": {
+    "pt": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966,",
+    "en": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966,"
+  },
+  "year": "2026",
+  "service": "Poster",
+  "client": "bgReal & Cavaca Records",
+  "thumb": "/projects/sim-sao-paulo/thumb.png",
+  "pageThumb": "/projects/sim-sao-paulo/page-thumb.png",
+  "images": [
+    { "src": "", "ratio": "16:9" },
+    { "src": "", "ratio": "3:4" }
+  ]
+}

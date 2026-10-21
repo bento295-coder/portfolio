@@ -1,0 +1,115 @@
+<!doctype html>
+<!-- Painel de conteúdo (Decap CMS). Só existe no dev: npm run dev → http://localhost:5173/admin/
+     O build da Vercel não inclui este arquivo. O decap-server (porta 8081, sobe junto no
+     npm run dev) grava os projetos direto nos arquivos do projeto, sem login. -->
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Painel · Bento Avellar</title>
+    <script>
+      window.CMS_MANUAL_INIT = true
+    </script>
+    <script src="https://unpkg.com/decap-cms@3.17.1/dist/decap-cms.js"></script>
+  </head>
+  <body>
+    <script>
+      const ratio = {
+        label: 'Proporção',
+        name: 'ratio',
+        widget: 'select',
+        options: [
+          { label: '16:9 (horizontal)', value: '16:9' },
+          { label: '3:4 (vertical)', value: '3:4' },
+        ],
+        default: '16:9',
+      }
+
+      CMS.init({
+        config: {
+          load_config_file: false,
+          // local: grava direto nos arquivos via decap-server
+          local_backend: true,
+          backend: { name: 'git-gateway' },
+          // caminhos relativos à pasta frontend (onde o decap-server roda)
+          media_folder: 'public/uploads',
+          public_folder: '/uploads',
+          collections: [
+            {
+              name: 'projetos',
+              label: 'Projetos',
+              label_singular: 'Projeto',
+              description:
+                'Cada projeto aparece no card da home (thumb 16:9) e na página do projeto (thumb 3:4 + galeria).',
+              folder: 'src/content/projects',
+              format: 'json',
+              extension: 'json',
+              create: true,
+              // a prévia padrão não usa o visual do site; o site em localhost é a prévia real
+              editor: { preview: false },
+              // nome do arquivo = endereço da página: /projetos/<slug>
+              slug: '{{slug}}',
+              identifier_field: 'title',
+              summary: '{{order}}. {{title}}',
+              sortable_fields: ['order', 'title', 'year'],
+              fields: [
+                { label: 'Título', name: 'title', widget: 'string' },
+                {
+                  label: 'Bio',
+                  name: 'description',
+                  widget: 'object',
+                  collapsed: false,
+                  fields: [
+                    { label: 'Português', name: 'pt', widget: 'text' },
+                    { label: 'Inglês', name: 'en', widget: 'text' },
+                  ],
+                },
+                { label: 'Ano', name: 'year', widget: 'string' },
+                { label: 'Serviço', name: 'service', widget: 'string' },
+                { label: 'Cliente', name: 'client', widget: 'string' },
+                {
+                  label: 'Thumb da home (16:9)',
+                  name: 'thumb',
+                  widget: 'image',
+                  hint: 'Imagem do card na home. Proporção 16:9.',
+                },
+                {
+                  label: 'Thumb da página (3:4)',
+                  name: 'pageThumb',
+                  widget: 'image',
+                  required: false,
+                  hint: 'Topo da página do projeto. Opcional: sem ela, a thumb da home é recortada em 3:4.',
+                },
+                {
+                  label: 'Galeria',
+                  name: 'images',
+                  widget: 'list',
+                  required: false,
+                  summary: '{{fields.ratio}}',
+                  hint: 'Fotos da página do projeto, na ordem em que aparecem.',
+                  fields: [{ label: 'Imagem', name: 'src', widget: 'image' }, ratio],
+                },
+                {
+                  label: 'Ordem na home',
+                  name: 'order',
+                  widget: 'number',
+                  value_type: 'int',
+                  default: 99,
+                  hint: 'Menor número aparece primeiro.',
+                },
+                {
+                  label: 'Publicado',
+                  name: 'published',
+                  widget: 'boolean',
+                  default: true,
+                  hint: 'Desligado: o projeto não aparece no site (rascunho).',
+                },
+              ],
+            },
+          ],
+        },
+      })
+    </script>
+  </body>
+</html>

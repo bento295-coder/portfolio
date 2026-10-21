@@ -379,6 +379,12 @@ body {
     color var(--theme-dur) ease;
 }
 
+/* Acima da camada translúcida do modo overlay. */
+.info {
+  position: relative;
+  z-index: 6;
+}
+
 .info.is-leaving {
   opacity: 0;
 }
@@ -410,6 +416,10 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-top: 16px;
+}
+
+.info__cell--col2 {
+  grid-column: 2;
 }
 
 .info__cell .info__label {
@@ -476,6 +486,38 @@ body {
 
 .page.is-hidden {
   display: none;
+}
+
+/* Info em modo camada (App INFO_MODE = 'overlay'): a página fica congelada
+   atrás, na posição em que estava (top negativo vem do App), e uma camada
+   translúcida e desfocada separa ela do Info. */
+.page.is-behind {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.info-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  animation: backdrop-in 500ms ease both;
+  transition: opacity 250ms ease;
+}
+
+.info-backdrop.is-leaving {
+  opacity: 0;
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
 }
 
 /* Imagem com proporção reservada (Media.jsx) */
