@@ -1,10 +1,11 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import NavBar from './components/NavBar.jsx'
 import InfoPanel from './components/InfoPanel.jsx'
 import Home from './components/Home.jsx'
 import ProjectPage from './components/ProjectPage.jsx'
 import Footer from './components/Footer.jsx'
+import DesktopIntro from './components/DesktopIntro.jsx'
 import { getInfo } from './content/info.js'
 import { getProject } from './content/projects.js'
 import { seo } from './content/seo.js'
@@ -90,8 +91,9 @@ function useScrollTop(screenRef, infoOpen) {
 }
 
 // Na primeira entrada pela home, a nav só aparece quando a abertura termina
-// (fim da escrita da frase). Entrando direto num projeto, ou com movimento
-// reduzido, aparece na hora. Trava de segurança: 4s.
+// (fim da escrita da frase no celular; fim da DesktopIntro no desktop).
+// Entrando direto num projeto, ou com movimento reduzido, aparece na hora.
+// Trava de segurança: 6s.
 function useIntroGate() {
   const [done, setDone] = useState(
     () =>
@@ -101,12 +103,22 @@ function useIntroGate() {
 
   useEffect(() => {
     if (done) return
-    const t = setTimeout(() => setDone(true), 4000)
+    const t = setTimeout(() => setDone(true), 6000)
     return () => clearTimeout(t)
   }, [done])
 
-  return [done, () => setDone(true)]
+  return [done, useCallback(() => setDone(true), [])]
 }
+
+// Abertura própria do desktop (DesktopIntro): só na primeira entrada pela
+// home, em tela ≥ 900px e sem movimento reduzido. Decidido uma vez, ao abrir.
+const useDesktopIntro = () =>
+  useState(
+    () =>
+      window.location.pathname === '/' &&
+      window.matchMedia('(min-width: 900px)').matches &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  )
 
 const NAV_AFTER_THUMB_MS = 300
 
@@ -139,6 +151,11 @@ export default function App() {
   const isProject = pathname.startsWith('/projetos/')
   useDocumentMeta(pathname)
   const [introDone, finishIntro] = useIntroGate()
+  const [desktopIntro, setDesktopIntro] = useDesktopIntro()
+  const endDesktopIntro = useCallback(() => {
+    setDesktopIntro(false)
+    finishIntro()
+  }, [setDesktopIntro, finishIntro])
   const [navHold, releaseNav] = useProjectNavHold(isProject)
 
   const [infoOpen, setInfoOpen] = useState(false)
@@ -213,7 +230,10 @@ export default function App() {
           style={overlay && infoMounted ? { top: frozenTop.current } : undefined}
         >
           <Routes>
-            <Route path="/" element={<Home lang={lang} onIntroDone={finishIntro} />} />
+            <Route
+              path="/"
+              element={<Home lang={lang} onIntroDone={desktopIntro ? undefined : finishIntro} />}
+            />
             <Route
               path="/projetos/:id"
               element={<ProjectPage lang={lang} onThumbRevealed={releaseNav} />}
@@ -227,6 +247,7 @@ export default function App() {
           <div className={`info-backdrop${infoOpen ? '' : ' is-leaving'}`} aria-hidden="true" />
         )}
         {infoMounted && <InfoPanel lang={lang} leaving={!infoOpen} />}
+        {desktopIntro && <DesktopIntro lang={lang} onDone={endDesktopIntro} />}
       </main>
     </div>
   )
