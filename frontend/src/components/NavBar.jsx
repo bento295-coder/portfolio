@@ -83,49 +83,11 @@ function useHideOnScroll(enabled) {
   return tucked
 }
 
-function Menu({ open, lang, onToggleLang, theme, onToggleTheme, email, onClose }) {
-  const t = ui[lang]
-  const dark = theme === 'dark'
-
-  return (
-    <div id="nav-menu" className={`navmenu${open ? ' is-open' : ''}`} inert={open ? undefined : ''}>
-      <div className="navmenu__row" style={{ '--i': 0 }}>
-        <button type="button" className="navbar__btn" onClick={onToggleLang} aria-label={t.switchLang}>
-          <LangLabel lang={lang} />
-        </button>
-        <button
-          type="button"
-          className="navmenu__theme"
-          onClick={onToggleTheme}
-          aria-pressed={dark}
-          aria-label={dark ? t.themeLight : t.themeDark}
-        >
-          <span className="navmenu__knob" />
-        </button>
-      </div>
-      <a className="navbar__btn" href={`mailto:${email}`} onClick={onClose} style={{ '--i': 1 }}>
-        <SwapLabel from="Contato" to="Contact" swapped={lang === 'en'} />
-      </a>
-    </div>
-  )
-}
-
-// Desktop: o menu abre na própria linha da nav. O botão "Menu" encolhe da
+// O menu abre na própria linha da nav. O botão "Menu" encolhe da
 // direita para a esquerda e as ações surgem da esquerda para a direita, no
 // mesmo espaço (CSS: .is-inline-open). Sem interação por IDLE_MS, fecha
 // fazendo o caminho inverso.
 const IDLE_MS = 4000
-
-function useMediaQuery(query) {
-  const [matches, setMatches] = useState(() => window.matchMedia(query).matches)
-  useEffect(() => {
-    const mq = window.matchMedia(query)
-    const onChange = () => setMatches(mq.matches)
-    mq.addEventListener('change', onChange)
-    return () => mq.removeEventListener('change', onChange)
-  }, [query])
-  return matches
-}
 
 // Fecha depois de IDLE_MS sem interação; `poke` recomeça a contagem.
 function useIdleClose(open, close) {
@@ -190,8 +152,7 @@ export default function NavBar({
   const extraLabelRef = useRef(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const t = ui[lang]
-  const desktop = useMediaQuery('(min-width: 900px)')
-  const inlineOpen = desktop && menuOpen && !infoOpen
+  const inlineOpen = menuOpen && !infoOpen
   const pokeIdle = useIdleClose(inlineOpen, () => setMenuOpen(false))
 
   useOpenWidth(navRef, extraLabelRef)
@@ -254,28 +215,15 @@ export default function NavBar({
         >
           <SwapLabel from="Menu" to={<LangLabel lang={lang} />} swapped={infoOpen} toRef={extraLabelRef} />
         </button>
-        {/* celular: lista que desce sob o botão; desktop: na mesma linha */}
-        {desktop ? (
-          <InlineMenu
-            open={inlineOpen}
-            lang={lang}
-            onToggleLang={onToggleLang}
-            theme={theme}
-            onToggleTheme={onToggleTheme}
-            email={email}
-            onClose={() => setMenuOpen(false)}
-          />
-        ) : (
-          <Menu
-            open={menuOpen && !infoOpen}
-            lang={lang}
-            onToggleLang={onToggleLang}
-            theme={theme}
-            onToggleTheme={onToggleTheme}
-            email={email}
-            onClose={() => setMenuOpen(false)}
-          />
-        )}
+        <InlineMenu
+          open={inlineOpen}
+          lang={lang}
+          onToggleLang={onToggleLang}
+          theme={theme}
+          onToggleTheme={onToggleTheme}
+          email={email}
+          onClose={() => setMenuOpen(false)}
+        />
       </div>
     </nav>
   )

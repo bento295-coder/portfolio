@@ -3,7 +3,7 @@ export const ui = {
   pt: {
     home: 'Bento Avellar, início',
     contact: 'Contato',
-    open: 'Abra',
+    open: 'ABRA',
     switchLang: 'Mudar o site para inglês',
     themeDark: 'Ativar tema escuro',
     themeLight: 'Ativar tema claro',
@@ -11,7 +11,7 @@ export const ui = {
   en: {
     home: 'Bento Avellar, home',
     contact: 'Contact',
-    open: 'Open',
+    open: 'OPEN',
     switchLang: 'Switch site to Portuguese',
     themeDark: 'Switch to dark theme',
     themeLight: 'Switch to light theme',

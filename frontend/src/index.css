@@ -189,57 +189,52 @@ body {
   opacity: 0.55;
 }
 
-/* Menu (dropdown sob o botão "Menu")
-   Linha 1: idioma + interruptor de tema; linha 2: contato (mailto).
-   Revela de cima para baixo, como a foto do Info, com os itens em cascata.
-   O recorte (clip-path) só existe durante a animação de abertura: um clip-path
-   permanente no container anularia o backdrop-filter (vidro) dos botões. */
-.navmenu {
-  position: absolute;
-  top: calc(100% + 2px);
-  left: 0;
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  width: 100%;
-  visibility: hidden;
-  transition: visibility 0s 250ms;
-}
-
-.navmenu.is-open {
-  visibility: visible;
-  transition: none;
-  animation: reveal-down 500ms var(--ease) backwards;
-}
-
-/* A opacidade fica nos próprios botões (não nas linhas), pelo mesmo motivo. */
-.navmenu :is(.navbar__btn, .navmenu__theme) {
-  opacity: 0;
-  translate: 0 -6px;
+/* Menu na linha da nav (NavBar InlineMenu). Abrindo: o "Menu" encolhe da
+   direita para a esquerda; depois as ações surgem da esquerda para a
+   direita, uma após a outra. Fechando: tudo ao contrário. As esperas
+   (transition-delay) trocam de lugar conforme o sentido.
+   Recorte em cada botão, não no container (senão anularia o vidro). */
+.navbar__cell--extra > .navbar__btn {
+  clip-path: inset(0);
   transition:
+    background-color var(--dur) var(--ease),
+    color var(--theme-dur) ease,
+    padding var(--dur) var(--ease),
     opacity 200ms ease,
-    translate 400ms var(--ease),
-    background-color var(--theme-dur) ease;
+    clip-path 350ms var(--ease) 420ms;
 }
 
-.navmenu.is-open :is(.navbar__btn, .navmenu__theme) {
-  opacity: 1;
-  translate: none;
-  transition:
-    opacity 350ms ease calc(60ms + var(--i) * 60ms),
-    translate 500ms var(--ease) calc(60ms + var(--i) * 60ms),
-    background-color var(--theme-dur) ease;
+.is-inline-open > .navbar__btn {
+  clip-path: inset(0 100% 0 0);
+  transition-delay: 0ms, 0ms, 0ms, 0ms, 0ms;
 }
 
-.navmenu__row {
+.navinline {
+  position: absolute;
+  inset: 0;
   display: flex;
   gap: 2px;
 }
 
-.navmenu__row .navbar__btn {
-  flex: 1 1 0;
+.navinline > * {
+  clip-path: inset(0 100% 0 0);
+  transition:
+    clip-path 260ms var(--ease) calc((2 - var(--i)) * 80ms),
+    background-color var(--theme-dur) ease;
+}
+
+.is-inline-open .navinline > * {
+  clip-path: inset(0);
+  transition-delay: calc(330ms + var(--i) * 80ms), 0ms;
+}
+
+.navinline > .navbar__btn {
+  flex: 1 1 auto;
   width: auto;
+}
+
+.navinline > .navinline__lang {
+  flex: 0 0 auto;
 }
 
 /* Interruptor de tema: o quadradinho fica embaixo no claro e sobe no escuro. */
@@ -811,8 +806,9 @@ body {
 }
 
 /* Página do projeto
-   Sem thumb: abre com os detalhes do projeto fixos e abertos (título grande,
-   texto e dados em 2 colunas), depois a galeria. Entra em cascata. */
+   Sem thumb: primeira imagem, depois os detalhes do projeto fixos e abertos
+   (título grande, texto e dados em 2 colunas), depois o resto da galeria.
+   Entra em cascata. */
 .project-page {
   display: flex;
   flex-direction: column;
@@ -824,8 +820,12 @@ body {
   animation: info-in 700ms var(--ease) both;
 }
 
-.project-page > * + * {
-  animation-delay: 150ms;
+.project-page > :nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.project-page > :nth-child(3) {
+  animation-delay: 240ms;
 }
 
 .project-page__head {
@@ -849,15 +849,6 @@ body {
 
 .project-page__head .project__meta {
   margin-top: 6px;
-}
-
-@keyframes reveal-down {
-  from {
-    clip-path: inset(0 0 100% 0);
-  }
-  to {
-    clip-path: inset(0);
-  }
 }
 
 .project-page__gallery {
@@ -1085,55 +1076,6 @@ body {
   .navbar__cell {
     pointer-events: auto;
   }
-
-  /* Menu na linha da nav (NavBar InlineMenu). Abrindo: o "Menu" encolhe da
-     direita para a esquerda; depois as ações surgem da esquerda para a
-     direita, uma após a outra. Fechando: tudo ao contrário. As esperas
-     (transition-delay) trocam de lugar conforme o sentido.
-     Recorte em cada botão, não no container (senão anularia o vidro). */
-  .navbar__cell--extra > .navbar__btn {
-    clip-path: inset(0);
-    transition:
-      background-color var(--dur) var(--ease),
-      color var(--theme-dur) ease,
-      padding var(--dur) var(--ease),
-      opacity 200ms ease,
-      clip-path 350ms var(--ease) 420ms;
-  }
-
-  .is-inline-open > .navbar__btn {
-    clip-path: inset(0 100% 0 0);
-    transition-delay: 0ms, 0ms, 0ms, 0ms, 0ms;
-  }
-
-  .navinline {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    gap: 2px;
-  }
-
-  .navinline > * {
-    clip-path: inset(0 100% 0 0);
-    transition:
-      clip-path 260ms var(--ease) calc((2 - var(--i)) * 80ms),
-      background-color var(--theme-dur) ease;
-  }
-
-  .is-inline-open .navinline > * {
-    clip-path: inset(0);
-    transition-delay: calc(330ms + var(--i) * 80ms), 0ms;
-  }
-
-  .navinline > .navbar__btn {
-    flex: 1 1 auto;
-    width: auto;
-  }
-
-  .navinline > .navinline__lang {
-    flex: 0 0 auto;
-  }
-
 
   .info {
     width: var(--col);
