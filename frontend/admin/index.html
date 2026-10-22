@@ -12,6 +12,14 @@
     <title>Painel · Bento Avellar</title>
     <script>
       window.CMS_MANUAL_INIT = true
+
+      // O login do GitHub só aceita o endereço principal do site (o mesmo do
+      // OAuth App). Aberto por outro endereço da Vercel, vai para o principal.
+      // Ao trocar para o domínio próprio: atualizar aqui e no OAuth App.
+      var SITE_HOST = 'portfolio-bento24.vercel.app'
+      if (/\.vercel\.app$/.test(location.hostname) && location.hostname !== SITE_HOST) {
+        location.replace('https://' + SITE_HOST + location.pathname + location.hash)
+      }
     </script>
     <script src="https://unpkg.com/decap-cms@3.17.1/dist/decap-cms.js"></script>
   </head>
