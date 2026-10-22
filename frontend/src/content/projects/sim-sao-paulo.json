@@ -9,14 +9,17 @@
   "year": "2026",
   "service": "Poster",
   "client": "bgReal & Cavaca Records",
-  "thumb": "/projects/sim-sao-paulo/thumb.png",
+  "thumb": "/projects/sim-sao-paulo/thumb.webm",
   "pageThumb": "/projects/sim-sao-paulo/page-thumb.png",
   "images": [
     {
-      "src": ""
+      "src": "/projects/sim-sao-paulo/artes-1.webp"
     },
     {
-      "src": ""
+      "src": "/projects/sim-sao-paulo/artes-2.webp"
+    },
+    {
+      "src": "/projects/sim-sao-paulo/artes-3.webp"
     }
   ]
 }
