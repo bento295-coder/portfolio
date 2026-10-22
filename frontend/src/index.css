@@ -375,7 +375,7 @@ body {
   color: var(--text);
   font-family: var(--font-ui);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 560; /* um pouco mais encorpado que o resto do site (500) */
   line-height: var(--line);
   transition:
     opacity 250ms ease,
