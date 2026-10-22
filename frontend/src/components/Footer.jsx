@@ -3,6 +3,7 @@ import { getInfo } from '../content/info.js'
 // Footer da home e das páginas de projeto (fica de fora do Info):
 // "B-Av" horizontal ao fundo; por cima, um pouco abaixo do topo do logo,
 // nome e contato (coluna 1) e redes + ano (coluna 2). Embaixo, os direitos.
+// No desktop vira uma linha só, com o logo pequeno (ver CSS).
 export default function Footer({ lang }) {
   const { contact, social } = getInfo(lang)
 
@@ -12,7 +13,7 @@ export default function Footer({ lang }) {
 
       {/* Coluna 1: nome, e-mail e endereço, separados por uma linha em branco. */}
       <div className="footer__col">
-        <p>Bento Avellar</p>
+        <p className="footer__name">Bento Avellar</p>
         <a className="footer__link" href={`mailto:${contact.email}`}>
           {contact.email}
         </a>
@@ -36,7 +37,7 @@ export default function Footer({ lang }) {
             </li>
           ))}
         </ul>
-        <p>{new Date().getFullYear()}</p>
+        <p className="footer__year">{new Date().getFullYear()}</p>
       </div>
 
       <p className="footer__rights">All rights reserved © Bento Avellar</p>
