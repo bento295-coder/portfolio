@@ -811,37 +811,44 @@ body {
 }
 
 /* Página do projeto
-   A thumb sangra até o topo e as laterais; a nav (fundo transparente) fica por cima.
-   A margem negativa é a altura da nav fechada: 10 + 31 + 10. */
+   Sem thumb: abre com os detalhes do projeto fixos e abertos (título grande,
+   texto e dados em 2 colunas), depois a galeria. Entra em cascata. */
 .project-page {
-  --nav-h: 51px;
-  --thumb-reveal: 900ms;
-  margin-top: calc(-1 * var(--nav-h));
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 4px 10px 40px;
 }
 
-/* Entrada: a thumb se revela de cima para baixo; só quando termina,
-   a barra e depois a galeria aparecem. */
-/* Curva in-out: a revelação termina visualmente no fim do tempo, sem pausa
-   antes do resto da página entrar. */
-.project-page__thumb {
-  animation: reveal-down var(--thumb-reveal) cubic-bezier(0.65, 0, 0.35, 1) both;
-}
-
-.project-page__thumb :is(img, video) {
-  animation: settle calc(var(--thumb-reveal) + 400ms) var(--ease) both;
-}
-
-.project-page__body {
-  padding: 0 10px 40px;
-}
-
-.project-page__body > * {
+.project-page > * {
   animation: info-in 700ms var(--ease) both;
-  animation-delay: var(--thumb-reveal);
 }
 
-.project-page__body > * + * {
-  animation-delay: calc(var(--thumb-reveal) + 120ms);
+.project-page > * + * {
+  animation-delay: 150ms;
+}
+
+.project-page__head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.project-page__title {
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.project-page__desc {
+  font-size: 16px;
+  line-height: 16px;
+}
+
+.project-page__head .project__meta {
+  margin-top: 6px;
 }
 
 @keyframes reveal-down {
@@ -850,12 +857,6 @@ body {
   }
   to {
     clip-path: inset(0);
-  }
-}
-
-@keyframes settle {
-  from {
-    transform: scale(1.06);
   }
 }
 
@@ -1167,9 +1168,7 @@ body {
   .typewriter__char,
   .navbar__btn,
   .hero__logo,
-  .project-page__thumb,
-  .project-page__thumb :is(img, video),
-  .project-page__body > * {
+  .project-page > * {
     animation: none;
   }
 

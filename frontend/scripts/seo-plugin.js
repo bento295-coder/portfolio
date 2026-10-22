@@ -145,7 +145,7 @@ function projectHead(c, p, noindex = false) {
           name: p.title,
           description: p.description?.pt,
           url,
-          image: [p.thumb, p.pageThumb, ...(p.images ?? []).map((i) => i.src)]
+          image: [p.thumb, ...(p.images ?? []).map((i) => i.src)]
             .filter((src) => src && !/\.(mp4|webm|mov|m4v)$/i.test(src))
             .map((src) => SITE_URL + src),
           dateCreated: p.year || undefined,
@@ -193,6 +193,7 @@ function projectBody({ seo }, p) {
     ['Ano', p.year],
     ['Serviço', p.service],
     ['Cliente', p.client],
+    ['Colaboração', p.collaboration],
   ].filter(([, v]) => v)
   return `<main class="prerender">
       <h1>${esc(p.title)}</h1>

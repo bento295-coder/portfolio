@@ -122,30 +122,6 @@ const useDesktopIntro = () =>
       !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   )
 
-const NAV_AFTER_THUMB_MS = 300
-
-// Na página do projeto, a nav sai de cena até a thumb terminar de se revelar
-// (+ um instante), para a thumb ser vista inteira. Trava de segurança: 2,5s
-// (ex.: movimento reduzido, quando a animação da thumb não roda).
-function useProjectNavHold(isProject) {
-  const [hold, setHold] = useState(false)
-  const { pathname } = useLocation()
-
-  // layout effect: esconde antes da nova página aparecer na tela
-  useLayoutEffect(() => {
-    setHold(isProject && !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-  }, [pathname, isProject])
-
-  useEffect(() => {
-    if (!hold) return
-    const t = setTimeout(() => setHold(false), 2500)
-    return () => clearTimeout(t)
-  }, [hold])
-
-  const release = () => setTimeout(() => setHold(false), NAV_AFTER_THUMB_MS)
-  return [hold, release]
-}
-
 export default function App() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -158,7 +134,6 @@ export default function App() {
     setDesktopIntro(false)
     finishIntro()
   }, [setDesktopIntro, finishIntro])
-  const [navHold, releaseNav] = useProjectNavHold(isProject)
 
   const [infoOpen, setInfoOpen] = useState(false)
   useScrollTop(screenRef, infoOpen)
@@ -206,7 +181,7 @@ export default function App() {
     <div className="stage">
       <main ref={screenRef} className="screen">
         <NavBar
-          hidden={!introDone || navHold}
+          hidden={!introDone}
           hideOnScroll={isProject}
           infoOpen={infoOpen}
           onHome={() => {
@@ -238,7 +213,7 @@ export default function App() {
             />
             <Route
               path="/projetos/:id"
-              element={<ProjectPage lang={lang} onThumbRevealed={releaseNav} />}
+              element={<ProjectPage lang={lang} />}
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

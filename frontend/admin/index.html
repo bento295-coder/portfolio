@@ -61,18 +61,12 @@
                 { label: 'Ano', name: 'year', widget: 'string' },
                 { label: 'Serviço', name: 'service', widget: 'string' },
                 { label: 'Cliente', name: 'client', widget: 'string' },
+                { label: 'Colaboração', name: 'collaboration', widget: 'string', required: false },
                 {
                   label: 'Thumb da home (16:9)',
                   name: 'thumb',
                   widget: 'file',
                   hint: `Card na home, sempre em 16:9 (o excesso é cortado). ${VIDEO_HINT}`,
-                },
-                {
-                  label: 'Thumb da página (3:4)',
-                  name: 'pageThumb',
-                  widget: 'file',
-                  required: false,
-                  hint: `Topo da página do projeto, sempre em 3:4 (o excesso é cortado). Opcional: sem ela, a thumb da home é recortada em 3:4. ${VIDEO_HINT}`,
                 },
                 {
                   label: 'Galeria',
