@@ -62,6 +62,8 @@ body {
 .screen {
   min-height: 100dvh;
   width: 100%;
+  /* nada pode criar rolagem lateral (clip não atrapalha a nav sticky) */
+  overflow-x: clip;
   background: var(--bg);
   transition: background-color var(--theme-dur) ease;
 }
@@ -214,6 +216,12 @@ body {
   inset: 0;
   display: flex;
   gap: 2px;
+}
+
+/* Com o Info aberto a célula encolhe para o botão de idioma; as ações
+   escondidas não podem continuar ocupando espaço (vazariam para a direita). */
+.is-info .navinline {
+  display: none;
 }
 
 .navinline > * {
@@ -1190,10 +1198,10 @@ body {
 
 /* Info no celular: cabe inteiro na tela, sem rolagem. Os espaços ficam um
    pouco mais justos e a foto encolhe na altura (corta, sem distorcer) quando
-   a tela é baixa. 558px = tudo o que não é foto (nav, textos, espaços). */
+   a tela é baixa: --photo-max é medido em InfoPanel (usePhotoFit). */
 @media (max-width: 899px) {
   .navbar__photo-frame {
-    max-height: max(90px, calc(100svh - 558px));
+    max-height: var(--photo-max, none);
   }
 
   .info {

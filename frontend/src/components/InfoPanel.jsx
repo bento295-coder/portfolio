@@ -1,4 +1,35 @@
+import { useLayoutEffect, useRef } from 'react'
 import { getInfo } from '../content/info.js'
+
+// No celular o Info cabe inteiro na tela, sem rolagem: a foto da nav fica
+// com a altura que sobra (medida aqui, em --photo-max). 31px = o que fica
+// acima do Info além da foto (nav e respiros, já descontado o recuo do
+// rótulo "About"). Recalcula ao trocar idioma (ResizeObserver) e ao girar
+// ou a barra do navegador mudar de tamanho.
+const ABOVE_INFO = 31
+
+function usePhotoFit(ref) {
+  useLayoutEffect(() => {
+    const info = ref.current
+    const root = document.documentElement
+    const mq = window.matchMedia('(max-width: 899px)')
+    const fit = () => {
+      if (!mq.matches) return root.style.removeProperty('--photo-max')
+      // altura visível de fato (a menor entre as medidas do navegador)
+      const screen = Math.min(window.innerHeight, root.clientHeight, window.visualViewport?.height ?? Infinity)
+      const room = screen - ABOVE_INFO - info.offsetHeight
+      root.style.setProperty('--photo-max', `${Math.max(80, Math.floor(room))}px`)
+    }
+    fit()
+    const ro = new ResizeObserver(fit)
+    ro.observe(info)
+    window.addEventListener('resize', fit)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', fit)
+    }
+  }, [ref])
+}
 
 function Label({ children }) {
   return <h2 className="info__label">{children}</h2>
@@ -39,12 +70,14 @@ function Cell({ label, index, className = '', children }) {
 export default function InfoPanel({ lang, leaving }) {
   const info = getInfo(lang)
   const { contact, labels } = info
+  const ref = useRef(null)
+  usePhotoFit(ref)
   // A frase de abertura é um bloco à parte: no desktop ela sai da coluna,
   // para a esquerda (ver .info__lead no CSS); no celular abre o 1º parágrafo.
   const [lead, first, ...more] = info.aboutParts
 
   return (
-    <section id="info" className={`info${leaving ? ' is-leaving' : ''}`} aria-label="Info">
+    <section ref={ref} id="info" className={`info${leaving ? ' is-leaving' : ''}`} aria-label="Info">
       <div className="info__block info__span info__about" style={{ '--i': 0 }}>
         <Label>{labels.about}</Label>
         <p className="info__text">
