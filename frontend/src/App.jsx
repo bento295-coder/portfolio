@@ -6,9 +6,11 @@ import Home from './components/Home.jsx'
 import ProjectPage from './components/ProjectPage.jsx'
 import Footer from './components/Footer.jsx'
 import DesktopIntro from './components/DesktopIntro.jsx'
+import CursorLabel from './components/CursorLabel.jsx'
 import { getInfo } from './content/info.js'
 import { getProject } from './content/projects.js'
 import { seo } from './content/seo.js'
+import { ui } from './content/ui.js'
 
 // Título e descrição da aba acompanham a página (o build já entrega certo no
 // primeiro carregamento; isto cobre a navegação dentro do site).
@@ -248,6 +250,7 @@ export default function App() {
         )}
         {infoMounted && <InfoPanel lang={lang} leaving={!infoOpen} />}
         {desktopIntro && <DesktopIntro lang={lang} onDone={endDesktopIntro} />}
+        <CursorLabel label={ui[lang].open} />
       </main>
     </div>
   )

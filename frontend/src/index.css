@@ -408,6 +408,11 @@ body {
   margin-top: 16px;
 }
 
+/* Parágrafos do About separados por uma linha em branco. */
+.info__text + .info__text {
+  margin-top: var(--line);
+}
+
 /* Abaixo do About: 3 linhas de 2 colunas (mesmo grid da página).
    10px entre rótulo e conteúdo e entre as linhas. */
 .info__grid {
@@ -1059,6 +1064,103 @@ body {
   }
 }
 
+/* Desktop: a nav fica sempre numa coluna centralizada, em todas as páginas.
+   Info no desktop: o mesmo layout do celular nessa mesma coluna, com duas
+   quebras propositais da coluna no About (só em telas grandes):
+   - a primeira frase sai para a esquerda, terminando onde o texto começa,
+     na altura da primeira linha;
+   - o convite sai para a direita, a partir do início do botão de idioma. */
+@media (min-width: 900px) {
+  :root {
+    --col: 390px;
+  }
+
+  .navbar {
+    padding-inline: calc((100% - var(--col)) / 2 + 10px);
+    /* as laterais vazias não bloqueiam cliques no conteúdo por baixo */
+    pointer-events: none;
+  }
+
+  .navbar__cell {
+    pointer-events: auto;
+  }
+
+  /* Menu na linha da nav (NavBar InlineMenu). Abrindo: o "Menu" encolhe da
+     direita para a esquerda; depois as ações surgem da esquerda para a
+     direita, uma após a outra. Fechando: tudo ao contrário. As esperas
+     (transition-delay) trocam de lugar conforme o sentido.
+     Recorte em cada botão, não no container (senão anularia o vidro). */
+  .navbar__cell--extra > .navbar__btn {
+    clip-path: inset(0);
+    transition:
+      background-color var(--dur) var(--ease),
+      color var(--theme-dur) ease,
+      padding var(--dur) var(--ease),
+      opacity 200ms ease,
+      clip-path 350ms var(--ease) 420ms;
+  }
+
+  .is-inline-open > .navbar__btn {
+    clip-path: inset(0 100% 0 0);
+    transition-delay: 0ms, 0ms, 0ms, 0ms, 0ms;
+  }
+
+  .navinline {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    gap: 2px;
+  }
+
+  .navinline > * {
+    clip-path: inset(0 100% 0 0);
+    transition:
+      clip-path 260ms var(--ease) calc((2 - var(--i)) * 80ms),
+      background-color var(--theme-dur) ease;
+  }
+
+  .is-inline-open .navinline > * {
+    clip-path: inset(0);
+    transition-delay: calc(330ms + var(--i) * 80ms), 0ms;
+  }
+
+  .navinline > .navbar__btn {
+    flex: 1 1 auto;
+    width: auto;
+  }
+
+  .navinline > .navinline__lang {
+    flex: 0 0 auto;
+  }
+
+
+  .info {
+    width: var(--col);
+    margin-inline: auto;
+  }
+
+  .info__text {
+    position: relative;
+  }
+
+  .info__lead {
+    position: absolute;
+    top: 0;
+    right: 100%;
+    width: max-content;
+    max-width: calc((100vw - var(--col)) / 2 - 20px);
+    padding-right: 0.28em; /* um espaço entre as frases */
+    text-align: right;
+  }
+
+  .info__cta {
+    grid-column: 1 / -1;
+    width: 11em;
+    margin-top: var(--line);
+    margin-left: calc(100% - var(--extra-open, 34px));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .info__block,
   .project,
@@ -1086,3 +1188,41 @@ body {
   }
 }
 
+
+/* Rótulo que segue o mouse (CursorLabel.jsx), só no desktop: "Abra"/"Open"
+   em branco, sem fundo, centrado na ponta do mouse, no lugar da seta. */
+.cursor-label {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  pointer-events: none;
+  translate: -100px -100px;
+}
+
+.cursor-label > span {
+  display: block;
+  translate: -50% -50%;
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  scale: 0.9;
+  transition:
+    opacity 200ms ease,
+    scale 300ms var(--ease);
+}
+
+.cursor-label.is-visible > span {
+  opacity: 1;
+  scale: 1;
+}
+
+@media (min-width: 900px) and (hover: hover) and (pointer: fine) {
+  [data-cursor] {
+    cursor: none;
+  }
+}

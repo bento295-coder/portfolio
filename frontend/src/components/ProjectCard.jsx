@@ -9,7 +9,7 @@ export default function ProjectCard({ project, lang, index }) {
 
   return (
     <article className="project" style={{ '--i': index }}>
-      <Link to={to} className="project__media-link" tabIndex={-1} aria-hidden="true">
+      <Link to={to} className="project__media-link" tabIndex={-1} aria-hidden="true" data-cursor>
         <Media media={project.thumb} className="project__media" />
       </Link>
       <ProjectSummary project={project} lang={lang} titleTo={to} />

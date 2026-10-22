@@ -29,7 +29,8 @@ function useOpenWidth(navRef, labelRef) {
       const btn = label.closest('.navbar__btn')
       const s = getComputedStyle(btn)
       const w = label.offsetWidth + parseFloat(s.paddingLeft) + parseFloat(s.paddingRight)
-      nav.style.setProperty('--extra-open', `${Math.ceil(w)}px`)
+      // na raiz: o Info no desktop também se alinha por essa medida
+      document.documentElement.style.setProperty('--extra-open', `${Math.ceil(w)}px`)
     }
 
     update()
@@ -109,6 +110,69 @@ function Menu({ open, lang, onToggleLang, theme, onToggleTheme, email, onClose }
   )
 }
 
+// Desktop: o menu abre na própria linha da nav. O botão "Menu" encolhe da
+// direita para a esquerda e as ações surgem da esquerda para a direita, no
+// mesmo espaço (CSS: .is-inline-open). Sem interação por IDLE_MS, fecha
+// fazendo o caminho inverso.
+const IDLE_MS = 4000
+
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches)
+  useEffect(() => {
+    const mq = window.matchMedia(query)
+    const onChange = () => setMatches(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [query])
+  return matches
+}
+
+// Fecha depois de IDLE_MS sem interação; `poke` recomeça a contagem.
+function useIdleClose(open, close) {
+  const timer = useRef(null)
+  const poke = () => {
+    clearTimeout(timer.current)
+    if (open) timer.current = setTimeout(close, IDLE_MS)
+  }
+  useEffect(() => {
+    poke()
+    return () => clearTimeout(timer.current)
+  }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
+  return poke
+}
+
+function InlineMenu({ open, lang, onToggleLang, theme, onToggleTheme, email, onClose }) {
+  const t = ui[lang]
+  const dark = theme === 'dark'
+
+  return (
+    <div id="nav-menu" className="navinline" inert={open ? undefined : ''}>
+      <a className="navbar__btn" href={`mailto:${email}`} onClick={onClose} style={{ '--i': 0 }}>
+        <SwapLabel from="Contato" to="Contact" swapped={lang === 'en'} />
+      </a>
+      <button
+        type="button"
+        className="navbar__btn navinline__lang"
+        onClick={onToggleLang}
+        aria-label={t.switchLang}
+        style={{ '--i': 1 }}
+      >
+        <LangLabel lang={lang} />
+      </button>
+      <button
+        type="button"
+        className="navmenu__theme"
+        onClick={onToggleTheme}
+        aria-pressed={dark}
+        aria-label={dark ? t.themeLight : t.themeDark}
+        style={{ '--i': 2 }}
+      >
+        <span className="navmenu__knob" />
+      </button>
+    </div>
+  )
+}
+
 export default function NavBar({
   hidden,
   hideOnScroll,
@@ -126,6 +190,9 @@ export default function NavBar({
   const extraLabelRef = useRef(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const t = ui[lang]
+  const desktop = useMediaQuery('(min-width: 900px)')
+  const inlineOpen = desktop && menuOpen && !infoOpen
+  const pokeIdle = useIdleClose(inlineOpen, () => setMenuOpen(false))
 
   useOpenWidth(navRef, extraLabelRef)
   useDismiss(menuOpen, navRef, () => setMenuOpen(false))
@@ -170,10 +237,16 @@ export default function NavBar({
       </div>
 
       {/* Na home é o "Menu"; com o Info aberto vira o botão de idioma. */}
-      <div className="navbar__cell navbar__cell--extra">
+      <div
+        className={`navbar__cell navbar__cell--extra${inlineOpen ? ' is-inline-open' : ''}`}
+        onPointerMove={inlineOpen ? pokeIdle : undefined}
+        onFocus={inlineOpen ? pokeIdle : undefined}
+        onClick={inlineOpen ? pokeIdle : undefined}
+      >
         <button
           type="button"
           className="navbar__btn"
+          inert={inlineOpen ? '' : undefined}
           onClick={infoOpen ? onToggleLang : () => setMenuOpen((open) => !open)}
           aria-expanded={infoOpen ? undefined : menuOpen}
           aria-controls={infoOpen ? undefined : 'nav-menu'}
@@ -181,15 +254,28 @@ export default function NavBar({
         >
           <SwapLabel from="Menu" to={<LangLabel lang={lang} />} swapped={infoOpen} toRef={extraLabelRef} />
         </button>
-        <Menu
-          open={menuOpen && !infoOpen}
-          lang={lang}
-          onToggleLang={onToggleLang}
-          theme={theme}
-          onToggleTheme={onToggleTheme}
-          email={email}
-          onClose={() => setMenuOpen(false)}
-        />
+        {/* celular: lista que desce sob o botão; desktop: na mesma linha */}
+        {desktop ? (
+          <InlineMenu
+            open={inlineOpen}
+            lang={lang}
+            onToggleLang={onToggleLang}
+            theme={theme}
+            onToggleTheme={onToggleTheme}
+            email={email}
+            onClose={() => setMenuOpen(false)}
+          />
+        ) : (
+          <Menu
+            open={menuOpen && !infoOpen}
+            lang={lang}
+            onToggleLang={onToggleLang}
+            theme={theme}
+            onToggleTheme={onToggleTheme}
+            email={email}
+            onClose={() => setMenuOpen(false)}
+          />
+        )}
       </div>
     </nav>
   )

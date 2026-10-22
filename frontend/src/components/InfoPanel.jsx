@@ -39,12 +39,22 @@ function Cell({ label, index, className = '', children }) {
 export default function InfoPanel({ lang, leaving }) {
   const info = getInfo(lang)
   const { contact, labels } = info
+  // A frase de abertura é um bloco à parte: no desktop ela sai da coluna,
+  // para a esquerda (ver .info__lead no CSS); no celular abre o 1º parágrafo.
+  const [lead, first, ...more] = info.aboutParts
 
   return (
     <section id="info" className={`info${leaving ? ' is-leaving' : ''}`} aria-label="Info">
       <div className="info__block info__span info__about" style={{ '--i': 0 }}>
         <Label>{labels.about}</Label>
-        <p>{info.about}</p>
+        <p className="info__text">
+          <span className="info__lead">{lead}</span> {first}
+        </p>
+        {more.map((text) => (
+          <p key={text} className="info__text">
+            {text}
+          </p>
+        ))}
       </div>
 
       <p className="info__block info__col2 info__cta" style={{ '--i': 1 }}>
