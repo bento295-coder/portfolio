@@ -1,8 +1,8 @@
 import { getInfo } from '../content/info.js'
 
 // Footer da home e das páginas de projeto (fica de fora do Info):
-// "B-Av" horizontal ao fundo; nome no topo e contato no pé da coluna 1;
-// redes e © no topo da coluna 2.
+// "B-Av" horizontal ao fundo; por cima, um pouco abaixo do topo do logo,
+// nome e contato (coluna 1) e redes + ano (coluna 2). Embaixo, os direitos.
 export default function Footer({ lang }) {
   const { contact, social } = getInfo(lang)
 
@@ -10,24 +10,22 @@ export default function Footer({ lang }) {
     <footer className="footer">
       <div className="footer__logo" aria-hidden="true" />
 
-      {/* Coluna 1: nome no topo, contato no pé. */}
+      {/* Coluna 1: nome, e-mail e endereço, separados por uma linha em branco. */}
       <div className="footer__col">
         <p>Bento Avellar</p>
-        <div>
-          <a className="footer__link" href={`mailto:${contact.email}`}>
-            {contact.email}
-          </a>
-          <address className="footer__address">
-            {contact.country}
-            <br />
-            <a href={`tel:${contact.phone.replace(/\s/g, '')}`}>{contact.phone}</a>
-            <br />
-            {contact.city}
-          </address>
-        </div>
+        <a className="footer__link" href={`mailto:${contact.email}`}>
+          {contact.email}
+        </a>
+        <address className="footer__address">
+          {contact.country}
+          <br />
+          <a href={`tel:${contact.phone.replace(/\s/g, '')}`}>{contact.phone}</a>
+          <br />
+          {contact.city}
+        </address>
       </div>
 
-      {/* Coluna 2: redes à esquerda e © à direita, ambos no topo. */}
+      {/* Coluna 2: redes à esquerda e ano à direita, na linha do nome. */}
       <div className="footer__col footer__col--2">
         <ul className="footer__social">
           {social.map((s) => (
@@ -38,8 +36,10 @@ export default function Footer({ lang }) {
             </li>
           ))}
         </ul>
-        <p>© {new Date().getFullYear()}</p>
+        <p>{new Date().getFullYear()}</p>
       </div>
+
+      <p className="footer__rights">All rights reserved © Bento Avellar</p>
     </footer>
   )
 }

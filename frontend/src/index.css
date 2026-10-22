@@ -764,25 +764,45 @@ body {
   transition: background-color var(--theme-dur) ease;
 }
 
-/* Posições explícitas: sem elas o grid evitaria sobrepor o logo. */
+/* Posições explícitas: sem elas o grid evitaria sobrepor o logo.
+   O texto começa um pouco abaixo do topo do logo (padding em %, que é
+   relativo à largura: acompanha o tamanho do logo). */
 .footer__col {
   grid-row: 1;
   grid-column: 1;
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  padding-top: 7%;
+}
+
+/* Contato um pouco mais afastado do nome (desce em relação à linha de cima). */
+.footer__col > .footer__link {
+  margin-top: 30px;
 }
 
 .footer__col--2 {
   grid-column: 2;
   flex-direction: row;
-  align-items: flex-start;
+  justify-content: space-between;
 }
 
 .footer__address {
-  margin-top: 14px;
   font-style: normal;
+}
+
+/* Linha de direitos, bem pequena, no pé do footer. */
+.footer__rights {
+  grid-row: 2;
+  grid-column: 1 / -1;
+  margin-top: 10px;
+  color: var(--text-muted);
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: color var(--theme-dur) ease;
 }
 
 .footer__social {
@@ -1165,5 +1185,34 @@ body {
 @media (min-width: 900px) and (hover: hover) and (pointer: fine) {
   [data-cursor] {
     cursor: none;
+  }
+}
+
+/* Info no celular: cabe inteiro na tela, sem rolagem. Os espaços ficam um
+   pouco mais justos e a foto encolhe na altura (corta, sem distorcer) quando
+   a tela é baixa. 558px = tudo o que não é foto (nav, textos, espaços). */
+@media (max-width: 899px) {
+  .navbar__photo-frame {
+    max-height: max(90px, calc(100svh - 558px));
+  }
+
+  .info {
+    padding-bottom: 14px;
+  }
+
+  .info__label {
+    margin-bottom: 10px;
+  }
+
+  .info__cta {
+    margin-top: 10px;
+  }
+
+  .info__grid {
+    margin-top: 14px;
+  }
+
+  .info__list--loose {
+    line-height: 15px;
   }
 }
