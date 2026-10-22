@@ -38,7 +38,7 @@ const shared = {
     { label: 'Linkedin', href: 'https://www.linkedin.com/in/bento-avellar-040666195/' },
   ],
 
-  clients: ['CCBB', 'Valor Economico', 'Galeria Refresco', 'Cavaca Records', 'bg Real', 'Trauma'],
+  clients: ['CCBB', 'Valor Economico', 'Galeria Refresco', 'Cavaca Records', 'bg Real', 'Jungle Discos'],
 
   collaborators: ['Roma Joana', 'Augusto Erthal', 'Vitor Vigo', 'Rafaella Meigger', 'Tiago Ak'],
 

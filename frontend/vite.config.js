@@ -5,6 +5,12 @@ import mediaSize from './scripts/media-size-plugin.js'
 
 export default defineConfig({
   plugins: [mediaSize(), react(), seo()],
+  // duas páginas: o site e o painel de projetos (/admin/)
+  build: {
+    rollupOptions: {
+      input: { main: 'index.html', admin: 'admin/index.html' },
+    },
+  },
   server: {
     port: Number(process.env.PORT) || 5173,
     proxy: {

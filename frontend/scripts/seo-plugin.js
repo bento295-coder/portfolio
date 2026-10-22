@@ -229,6 +229,8 @@ const AI_BOTS = [
 function robotsTxt({ SITE_URL }) {
   return `User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /api/
 
 ${AI_BOTS.map((b) => `User-agent: ${b}\nAllow: /`).join('\n\n')}
 

@@ -1,7 +1,9 @@
 <!doctype html>
-<!-- Painel de conteúdo (Decap CMS). Só existe no dev: npm run dev → http://localhost:5173/admin/
-     O build da Vercel não inclui este arquivo. O decap-server (porta 8081, sobe junto no
-     npm run dev) grava os projetos direto nos arquivos do projeto, sem login. -->
+<!-- Painel de conteúdo (Decap CMS), em /admin/.
+     - No site (Vercel): login com o GitHub (api/auth.js + api/callback.js); cada
+       "Publicar" vira um commit no repositório e a Vercel publica sozinha.
+     - No computador (npm run dev → http://localhost:5173/admin/): o decap-server
+       (porta 8081) grava direto nos arquivos do projeto, sem login. -->
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
@@ -19,14 +21,30 @@
       // Widget "file" (e não "image") para aceitar vídeo também.
       const VIDEO_HINT = 'Imagem ou vídeo (.mp4/.webm, até ~10 MB; toca em loop, sem som).'
 
+      // No computador os caminhos são relativos à pasta frontend (onde o
+      // decap-server roda); no site, relativos à raiz do repositório.
+      const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname)
+      const ROOT = LOCAL ? '' : 'frontend/'
+
       CMS.init({
         config: {
           load_config_file: false,
-          // local: grava direto nos arquivos via decap-server
-          local_backend: true,
-          backend: { name: 'git-gateway' },
-          // caminhos relativos à pasta frontend (onde o decap-server roda)
-          media_folder: 'public/uploads',
+          local_backend: LOCAL,
+          backend: {
+            name: 'github',
+            repo: 'bento295-coder/portfolio',
+            branch: 'main',
+            base_url: location.origin,
+            auth_endpoint: 'api/auth',
+            commit_messages: {
+              create: 'Painel: novo projeto "{{slug}}"',
+              update: 'Painel: atualiza "{{slug}}"',
+              delete: 'Painel: apaga "{{slug}}"',
+              uploadMedia: 'Painel: envia {{path}}',
+              deleteMedia: 'Painel: apaga {{path}}',
+            },
+          },
+          media_folder: ROOT + 'public/uploads',
           public_folder: '/uploads',
           collections: [
             {
@@ -34,8 +52,8 @@
               label: 'Projetos',
               label_singular: 'Projeto',
               description:
-                'Cada projeto aparece no card da home (thumb 16:9) e na página do projeto (thumb 3:4 + galeria).',
-              folder: 'src/content/projects',
+                'Cada projeto aparece no card da home (thumb 16:9) e na página do projeto (galeria; a 1ª imagem abre a página, antes dos textos).',
+              folder: ROOT + 'src/content/projects',
               format: 'json',
               extension: 'json',
               create: true,
