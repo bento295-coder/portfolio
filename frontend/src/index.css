@@ -339,18 +339,23 @@ body {
   background: var(--nav-bg);
 }
 
-/* Com foto (PNG/WebP sem fundo), o quadrado fica transparente; o cinza é só placeholder. */
-.navbar__photo-frame:has(img) {
+/* Com foto, o quadrado fica transparente; o cinza é só placeholder. */
+.navbar__photo-frame:has(.navbar__photo-ink) {
   background: transparent;
 }
 
-.navbar__photo img {
-  display: block;
+/* A foto é só tinta (PNG/WebP com fundo transparente) usada como máscara e
+   pintada com a cor do texto: escura no tema claro, clara no escuro. */
+.navbar__photo-ink {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  background: var(--text);
+  -webkit-mask: var(--photo) center / cover no-repeat;
+  mask: var(--photo) center / cover no-repeat;
   transform: scale(1.08);
-  transition: transform 900ms var(--ease);
+  transition:
+    transform 900ms var(--ease),
+    background-color var(--theme-dur) ease;
 }
 
 .is-info .navbar__photo {
@@ -358,7 +363,7 @@ body {
   transition: grid-template-rows 700ms var(--ease) 120ms;
 }
 
-.is-info .navbar__photo img {
+.is-info .navbar__photo-ink {
   transform: scale(1);
 }
 

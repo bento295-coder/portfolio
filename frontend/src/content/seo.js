@@ -18,5 +18,5 @@ export const seo = {
   education: 'Universidade Veiga de Almeida',
   // imagem de compartilhamento (WhatsApp, LinkedIn, Google…) e retrato
   shareImage: '/share.png', // B-Av branco no cinza da abertura, 1200×630
-  portrait: '/info/bento.webp',
+  portrait: '/info/bento-1.webp',
 }

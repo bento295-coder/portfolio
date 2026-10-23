@@ -191,7 +191,14 @@ export default function NavBar({
         <div id="info-photo" className="navbar__photo" aria-hidden={!infoOpen}>
           <div className="navbar__photo-clip">
             <div className="navbar__photo-frame">
-              {photoSrc && <img src={photoSrc} alt="Retrato de Bento Avellar" />}
+              {photoSrc && (
+                <div
+                  className="navbar__photo-ink"
+                  role="img"
+                  aria-label="Retrato de Bento Avellar"
+                  style={{ '--photo': `url(${photoSrc})` }}
+                />
+              )}
             </div>
           </div>
         </div>

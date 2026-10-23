@@ -57,6 +57,32 @@
           public_folder: '/uploads',
           collections: [
             {
+              name: 'site',
+              label: 'Info',
+              description: 'Ajustes da página Info.',
+              editor: { preview: false },
+              files: [
+                {
+                  name: 'info',
+                  label: 'Foto do Info',
+                  file: ROOT + 'src/content/site.json',
+                  fields: [
+                    {
+                      label: 'Foto do Info',
+                      name: 'infoPhoto',
+                      widget: 'select',
+                      hint: 'Retrato que aparece no Info (só a tinta; fica branco no modo escuro).',
+                      options: [
+                        { label: '1. Paletó, bananeira', value: '/info/bento-1.webp' },
+                        { label: '2. Camisa listrada, janela', value: '/info/bento-2.webp' },
+                        { label: '3. Gola alta, sombra de folhas', value: '/info/bento-3.webp' },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
               name: 'projetos',
               label: 'Projetos',
               label_singular: 'Projeto',

@@ -11,6 +11,8 @@ import { getInfo } from './content/info.js'
 import { getProject } from './content/projects.js'
 import { seo } from './content/seo.js'
 import { ui } from './content/ui.js'
+// Ajustes editáveis pelo painel (/admin › Info): por ora, qual foto aparece no Info.
+import site from './content/site.json'
 
 // Título e descrição da aba acompanham a página (o build já entrega certo no
 // primeiro carregamento; isto cobre a navegação dentro do site).
@@ -197,7 +199,7 @@ export default function App() {
           theme={theme}
           onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           email={getInfo(lang).contact.email}
-          photoSrc="/info/bento.webp"
+          photoSrc={site.infoPhoto}
         />
         {/* A página continua montada (mantém cards abertos etc.). Com o Info:
             modo "page" esconde; modo "overlay" congela atrás da camada. */}
