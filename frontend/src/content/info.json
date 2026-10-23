@@ -1,0 +1,108 @@
+{
+  "photo": "/info/bento-2.webp",
+  "about": {
+    "pt": {
+      "lead": "Bento Avellar, designer baseado em Niterói, RJ.",
+      "paragraphs": [
+        {
+          "text": "Concluindo o curso de Design Gráfico na Universidade Veiga de Almeida. Suas soluções perpassam o desenvolvimento de sistemas visuais adaptáveis, muitas vezes guiados pela tipografia e pelas novas tecnologias."
+        },
+        {
+          "text": "Fora da tela, vive os sons: produz eventos, músicas e oficinas que têm como eixo central a cena cultural niteroiense."
+        }
+      ]
+    },
+    "en": {
+      "lead": "Bento Avellar, a designer based in Niterói, RJ.",
+      "paragraphs": [
+        {
+          "text": "Completing a degree in Graphic Design at Universidade Veiga de Almeida. The work runs through the development of adaptable visual systems, often guided by typography and new technologies."
+        },
+        {
+          "text": "Away from the screen, Bento lives through sound: producing events, music and workshops centered on Niterói's cultural scene."
+        }
+      ]
+    }
+  },
+  "cta": {
+    "pt": "Entre em contato para colaborarmos.",
+    "en": "Get in touch and let's work together."
+  },
+  "proficiencies": [
+    {
+      "name": "Motion"
+    },
+    {
+      "name": "Brand Design"
+    },
+    {
+      "name": "Creative Direction"
+    },
+    {
+      "name": "Digital Design"
+    },
+    {
+      "name": "Type Design"
+    },
+    {
+      "name": "Web Development"
+    }
+  ],
+  "contact": {
+    "email": "bento295@gmail.com",
+    "country": "BR",
+    "phone": "+55 21 985538535",
+    "city": "Rio de Janeiro"
+  },
+  "social": [
+    {
+      "label": "Instagram",
+      "url": "https://www.instagram.com/_avllr_/"
+    },
+    {
+      "label": "Linkedin",
+      "url": "https://www.linkedin.com/in/bento-avellar-040666195/"
+    }
+  ],
+  "clients": [
+    {
+      "name": "CCBB"
+    },
+    {
+      "name": "Valor Economico"
+    },
+    {
+      "name": "Galeria Refresco"
+    },
+    {
+      "name": "Cavaca Records"
+    },
+    {
+      "name": "bg Real"
+    },
+    {
+      "name": "Jungle Discos"
+    }
+  ],
+  "collaborators": [
+    {
+      "name": "Roma Joana"
+    },
+    {
+      "name": "Augusto Erthal"
+    },
+    {
+      "name": "Vitor Vigo"
+    },
+    {
+      "name": "Rafaella Meigger"
+    },
+    {
+      "name": "Tiago Ak"
+    }
+  ],
+  "credits": {
+    "line1": "Site Design & Code by",
+    "line2": "Bento Avellar"
+  }
+}
